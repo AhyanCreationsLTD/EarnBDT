@@ -1,223 +1,26 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EarnBDT - Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>EarnBDT Web App</title>
     <style>
-        :root {
-            --primary-green: #28a745;
-            --dark-bg: #121212;
-            --card-bg: #1e1e1e;
-            --text-white: #ffffff;
-            --accent-orange: #ff9800;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--dark-bg);
-            color: var(--text-white);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Splash Loader Effect */
-        #loader {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: var(--dark-bg);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid var(--primary-green);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .app-container {
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        /* Header Section */
-        .header {
-            background-color: var(--primary-green);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        }
-
-        .user-info h3 { margin: 0; font-size: 13px; font-weight: 300; opacity: 0.9; }
-        .user-info p { margin: 0; font-size: 18px; font-weight: 600; }
-
-        /* Balance Card */
-        .balance-card {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            border: 1px solid #333;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            margin-bottom: 25px;
-        }
-
-        .balance-card h2 { color: #aaa; font-size: 14px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
-        .balance-amount {
-            font-size: 45px;
-            font-weight: 700;
-            color: var(--accent-orange);
-            margin: 10px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Task Buttons */
-        .task-section-title { font-size: 16px; margin-bottom: 15px; color: #888; padding-left: 5px; }
-        
-        .task-btn {
-            background: var(--card-bg);
-            padding: 18px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            text-decoration: none;
-            color: white;
-            transition: transform 0.2s, background 0.3s;
-            border: 1px solid #333;
-        }
-
-        .task-btn:active { transform: scale(0.98); }
-        .task-btn i { font-size: 28px; margin-right: 15px; color: var(--primary-green); }
-        .task-btn div b { display: block; font-size: 16px; margin-bottom: 2px; }
-        .task-btn div span { font-size: 12px; color: #777; }
-
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #121212; color: white; padding: 50px; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
+        button { background-color: #00c853; color: white; border: none; padding: 15px 30px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 20px; }
+        button:active { background-color: #009624; }
     </style>
 </head>
 <body>
-
-    <div id="loader">
-        <div class="spinner"></div>
-        <p style="margin-top: 15px; font-size: 14px; color: var(--primary-green);">EarnBDT Loading...</p>
+    <div class="card">
+        <h1>Welcome to EarnBDT</h1>
+        <p>আপনার ওয়েবসাইটের কানেকশন সফল হয়েছে!</p>
+        <button onclick="window.AppInventor.setWebViewString('watch_ad')">Watch Ad to Earn</button>
     </div>
-
-    <div class="app-container">
-        <div class="header">
-            <div class="user-info">
-                <h3>স্বাগতম,</h3>
-                <p id="user-mobile">01604444716</p>
-            </div>
-            <i class="fa-solid fa-circle-user" style="font-size: 30px;"></i>
-        </div>
-
-        <div class="balance-card">
-            <h2>আপনার বর্তমান ব্যালেন্স</h2>
-            <p class="balance-amount">৳ <span id="balance">0.00</span></p>
-        </div>
-
-        <div class="task-section">
-            <p class="task-section-title">কাজ শুরু করুন</p>
-            
-            <a href="javascript:void(0);" onclick="watchAd()" class="task-btn">
-                <i class="fa-solid fa-circle-play"></i>
-                <div>
-                    <b>ভিডিও অ্যাড দেখুন</b>
-                    <span>অ্যাড দেখে পয়েন্ট আয় করুন</span>
-                </div>
-            </a>
-
-            <a href="#" class="task-btn" style="opacity: 0.6;">
-                <i class="fa-solid fa-list-check"></i>
-                <div>
-                    <b>ডেইলি টাস্ক</b>
-                    <span>শীঘ্রই আসছে...</span>
-                </div>
-            </a>
-        </div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <script>
-        // আপনার কনফিগারেশন
-        const firebaseConfig = {
-          apiKey: "AIzaSyAk-1oYIaRLmvUvVtMJd1AjzqUswxqvn7M",
-          authDomain: "earnbdt-acl-app.firebaseapp.com",
-          databaseURL: "https://earnbdt-acl-app-default-rtdb.firebaseio.com",
-          projectId: "earnbdt-acl-app",
-          storageBucket: "earnbdt-acl-app.firebasestorage.app",
-          messagingSenderId: "494434588404",
-          appId: "1:494434588404:web:ec6af909ffa64c80f1f0a1",
-          measurementId: "G-GXMV451BLC"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        // ১. অ্যাপ থেকে মোবাইল নম্বর রিসিভ করার লজিক
-        let currentMobile = "01604444716"; // ডিফল্ট নম্বর
-
-        // এই ফাংশনটি Kodular থেকে কল হবে
-        window.addEventListener('load', () => {
-            // ৩ সেকেন্ড পর লোডার বন্ধ হবে (Splash Effect)
-            setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
-            }, 2000);
-            
-            listenForBalance(currentMobile);
-        });
-
-        // ২. রিয়েল-টাইমে ব্যালেন্স আপডেট
-        function listenForBalance(mobile) {
-            document.getElementById('user-mobile').innerText = mobile;
-            database.ref(mobile).on('value', (snapshot) => {
-                const data = snapshot.val();
-                document.getElementById('balance').innerText = data ? data : "0.00";
-            });
-        }
-
-        // ৩. অ্যাড দেখার রিকোয়েস্ট Kodular অ্যাপে পাঠানো
-        function watchAd() {
-            if (window.AppInventor) {
-                window.AppInventor.setWebViewString("watch_ad");
-            } else {
-                alert("অ্যাড দেখতে EarnBDT অ্যাপটি ব্যবহার করুন।");
-            }
-        }
-
-        // Kodular থেকে মোবাইল নম্বর পরিবর্তনের জন্য ফাংশন
-        function setMobileFromApp(mobile) {
-            currentMobile = mobile;
-            listenForBalance(mobile);
-        }
+        // আপনার অ্যাপের সাথে যোগাযোগের জন্য এই স্ক্রিপ্টটি সাহায্য করবে
+        console.log("Web Page Loaded Successfully");
     </script>
 </body>
 </html>
