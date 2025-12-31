@@ -3,24 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EarnBDT Web App</title>
+    <title>EarnBDT - Watch Ads</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #121212; color: white; padding: 50px; }
-        .card { background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
-        button { background-color: #00c853; color: white; border: none; padding: 15px 30px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 20px; }
-        button:active { background-color: #009624; }
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        .ad-button {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .ad-button:hover {
+            background-color: #218838;
+        }
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Welcome to EarnBDT</h1>
-        <p>আপনার ওয়েবসাইটের কানেকশন সফল হয়েছে!</p>
-        <button onclick="window.AppInventor.setWebViewString('watch_ad')">Watch Ad to Earn</button>
-    </div>
+
+    <h1>Earn BDT Online</h1>
+    
+    <button class="ad-button" onclick="watchVideoAd()">Watch Ad to Earn</button>
+
+    <div id="status">Click the button to earn points!</div>
 
     <script>
-        // আপনার অ্যাপের সাথে যোগাযোগের জন্য এই স্ক্রিপ্টটি সাহায্য করবে
-        console.log("Web Page Loaded Successfully");
+        // ১. অ্যাপের জাভা কোডকে কল করার ফাংশন
+        function watchVideoAd() {
+            if (window.Android && window.Android.showAd) {
+                document.getElementById('status').innerText = "Loading Ad...";
+                window.Android.showAd(); // এটি স্কেচওয়্যার অ্যাপের ইন্টারফেসকে কল করবে
+            } else {
+                alert("Please open this website through our official App to watch ads.");
+            }
+        }
+
+        // ২. অ্যাড দেখা শেষ হলে অ্যাপ এই ফাংশনটি কল করবে
+        function rewardSuccess() {
+            document.getElementById('status').innerText = "Congratulations! You earned 10 points.";
+            document.getElementById('status').style.color = "green";
+            
+            // এখানে আপনার ডাটাবেজে পয়েন্ট যোগ করার কোড লিখতে পারেন
+            console.log("Reward successfully granted!");
+        }
     </script>
+
 </body>
 </html>
+
