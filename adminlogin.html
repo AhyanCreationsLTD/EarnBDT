@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EarnBDT | Admin Login</title>
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#ff5e62,#ff9966);
+  font-family:Arial,sans-serif;
+}
+.box{
+  background:#fff;
+  padding:30px;
+  width:300px;
+  border-radius:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
+  text-align:center;
+}
+.box h2{
+  margin-bottom:20px;
+  color:#333;
+}
+.box input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+.box button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#ff5e62;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+  margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Admin Login</h2>
+<input type="email" id="adminEmail" placeholder="Email">
+<input type="password" id="adminPassword" placeholder="Password">
+<button onclick="adminLogin()">Login</button>
+</div>
+
+<script>
+function adminLogin(){
+  const email = document.getElementById("adminEmail").value.trim();
+  const password = document.getElementById("adminPassword").value.trim();
+
+  // Fixed credentials
+  if(email === "ahyanarfinofficial@gmail.com" && password === "9173205@KP"){
+    window.location.href="admin.html";
+  }else{
+    alert("আপনার জন্য এটা নয়");
+    window.location.href="login.html";
+  }
+}
+</script>
+
+</body>
+</html>
