@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EarnBDT | Withdraw History</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#43cea2,#185a9d);display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding-top:20px;}
+.container{width:90%;max-width:600px;}
+.card{background:#fff;padding:15px;margin-bottom:15px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.2);}
+.card h3{margin:0;color:#333;}
+.card p{margin:5px 0;color:#555;}
+</style>
+</head>
+<body>
+<div class="container" id="historyContainer">
+<h2 style="color:white;text-align:center;margin-bottom:15px;">Withdraw History</h2>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
+  authDomain: "earnbdtapp.firebaseapp.com",
+  databaseURL: "https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "earnbdtapp",
+  storageBucket: "earnbdtapp.firebasestorage.app",
+  messagingSenderId: "407276444050",
+  appId: "1:407276444050:web:b6ff2e075202716b5e094b"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+onAuthStateChanged(auth, async user=>{
+  if(user){
+    const uid = user.uid;
+    const withdrawRef = ref(db,"withdrawals");
+    const snap = await get(withdrawRef);
+    const container = document.getElementById("historyContainer");
+    container.innerHTML = "<h2 style='color:white;text-align:center;margin-bottom:15px;'>Withdraw History</h2>";
+
+    if(snap.exists()){
+      const allReq = snap.val();
+      Object.values(allReq).forEach(req=>{
+        if(req.uid===uid){
+          const div = document.createElement("div");
+          div.className="card";
+          div.innerHTML=`<h3>${req.method} - ${req.amount} BDT</h3>
+                         <p>Status: ${req.status}</p>
+                         <p>Number: ${req.number}</p>`;
+          container.appendChild(div);
+        }
+      });
+    }else{
+      container.innerHTML+="<p style='color:white;text-align:center;'>No Withdraw History Found</p>";
+    }
+  }else{
+    window.location.href="login.html";
+  }
+});
+</script>
+</body>
+</html>
