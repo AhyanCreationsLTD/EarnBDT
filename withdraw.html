@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EarnBDT | Withdraw</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;justify-content:center;align-items:center;height:100vh;}
+.box{background:#fff;padding:30px;width:350px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,.2);}
+.box h2{text-align:center;margin-bottom:20px;color:#333;}
+.box input, .box select{width:100%;padding:12px;margin:10px 0;border-radius:8px;border:1px solid #ccc;}
+.box button{width:100%;padding:12px;border:none;border-radius:8px;background:#667eea;color:#fff;font-size:16px;cursor:pointer;margin-top:10px;}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Withdraw Request</h2>
+
+<input type="text" id="username" placeholder="Username" readonly>
+<input type="email" id="email" placeholder="Email" readonly>
+<select id="method">
+  <option value="">Select Payment Method</option>
+  <option value="Bkash">Bkash</option>
+  <option value="Nagad">Nagad</option>
+  <option value="Rocket">Rocket</option>
+</select>
+<input type="text" id="number" placeholder="Payment Number">
+<input type="number" id="amount" placeholder="Withdraw Amount">
+<button onclick="sendWithdrawRequest()">Submit Request</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getDatabase, ref, get, push, set, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
+  authDomain: "earnbdtapp.firebaseapp.com",
+  databaseURL: "https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "earnbdtapp",
+  storageBucket: "earnbdtapp.firebasestorage.app",
+  messagingSenderId: "407276444050",
+  appId: "1:407276444050:web:b6ff2e075202716b5e094b"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+let currentUser = null;
+onAuthStateChanged(auth, user=>{
+  if(user){
+    currentUser = user;
+    const uid = user.uid;
+    get(ref(db,"users/"+uid)).then(snap=>{
+      if(snap.exists()){
+        const data = snap.val();
+        document.getElementById("username").value = data.username || "User";
+        document.getElementById("email").value = data.email || user.email;
+      }
+    });
+  }else{
+    window.location.href="login.html";
+  }
+});
+
+/* Send Withdraw Request */
+window.sendWithdrawRequest = async function(){
+  const method = document.getElementById("method").value;
+  const number = document.getElementById("number").value.trim();
+  const amount = parseInt(document.getElementById("amount").value);
+
+  if(!method || !number || !amount){
+    alert("সব ঘর পূরণ করুন");
+    return;
+  }
+
+  const uid = currentUser.uid;
+  const balRef = ref(db,"users/"+uid+"/balance");
+  const snap = await get(balRef);
+  const balance = snap.val() || 0;
+  if(amount>balance){
+    alert("আপনার ব্যালেন্স পর্যাপ্ত নয়");
+    return;
+  }
+
+  // Push withdraw request
+  const withdrawRef = ref(db,"withdrawals");
+  const newReqRef = push(withdrawRef);
+  await set(newReqRef,{
+    uid: uid,
+    username: document.getElementById("username").value,
+    email: document.getElementById("email").value,
+    method: method,
+    number: number,
+    amount: amount,
+    status: "Pending",
+    timestamp: Date.now()
+  });
+
+  // Temporarily deduct balance until admin approves/rejects
+  await update(balRef,{balance: balance - amount});
+
+  alert("Withdraw request submitted!");
+  window.location.href="dashboard.html";
+}
+</script>
+
+</body>
+</html>
