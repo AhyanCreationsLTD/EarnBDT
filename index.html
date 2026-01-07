@@ -5,6 +5,11 @@
   <title>EarnBDT - Earn Real Money</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Cache কম রাখার জন্য হিন্ট -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
   <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -163,6 +168,7 @@
     .header-links {
       font-size: 0.78rem;
       color: #9ca3af;
+      text-align: right;
     }
 
     /* Hero */
@@ -553,6 +559,7 @@
     </div>
   </div>
 
+  <!-- Slider + Splash -->
   <script>
     // Splash screen: hide after 2 seconds
     window.addEventListener("load", () => {
@@ -603,6 +610,63 @@
     // Start slider
     showSlide(0);
     startSlider();
+  </script>
+
+  <!-- Firebase + Auto Login + Auto Update Cache -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // তোমার Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAk-1oYIaRLmvUvVtMJd1AjzqUswxqvn7M",
+      authDomain: "earnbdt-acl-app.firebaseapp.com",
+      databaseURL: "https://earnbdt-acl-app-default-rtdb.firebaseio.com",
+      projectId: "earnbdt-acl-app",
+      storageBucket: "earnbdt-acl-app.firebasestorage.app",
+      messagingSenderId: "494434588404",
+      appId: "1:494434588404:web:ec6af909ffa64c80f1f0a1",
+      measurementId: "G-GXMV451BLC"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const ADMIN_EMAIL = "ahyanarfinofficial@gmail.com";
+    const ADMIN_URL = "admin.html";
+    const DASHBOARD_URL = "dashboard.html";
+
+    // Auto login: ইউজার আগেই লগইন থাকলে সরাসরি admin/dashboard এ পাঠাও
+    let authHandled = false;
+    auth.onAuthStateChanged((user) => {
+      if (authHandled) return;
+      authHandled = true;
+
+      if (user) {
+        const email = (user.email || "").toLowerCase();
+        // একটু delay দিলে Splash effect টা দেখা যায়
+        setTimeout(() => {
+          if (email === ADMIN_EMAIL.toLowerCase()) {
+            window.location.href = ADMIN_URL;
+          } else {
+            window.location.href = DASHBOARD_URL;
+          }
+        }, 1000);
+      }
+      // না থাকলে কিছুই করব না → Landing পেইজ দেখা যাবে
+    });
+
+    // Auto-update এর জন্য cache / service worker clear করার চেষ্টা
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(reg => reg.unregister());
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => caches.delete(name));
+      });
+    }
   </script>
 </body>
 </html>
