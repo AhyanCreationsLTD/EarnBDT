@@ -1,69 +1,383 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EarnBDT - Watch Ads</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-        }
-        .ad-button {
-            background-color: #28a745;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .ad-button:hover {
-            background-color: #218838;
-        }
-        #status {
-            margin-top: 20px;
-            font-weight: bold;
-            color: #333;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>EarnBDT - Login / Signup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #1a73e8, #020617 55%);
+      color: #0f172a;
+    }
+
+    .auth-wrapper {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 18px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.45);
+      padding: 26px 24px 30px;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .brand h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 0.06em;
+    }
+
+    .brand span {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .tab-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #e2e8f0;
+      padding: 4px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+
+    .tab-btn {
+      border: none;
+      background: transparent;
+      padding: 8px 0;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: #475569;
+      transition: all 0.25s ease;
+    }
+
+    .tab-btn.active {
+      background: #0f172a;
+      color: #f8fafc;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.35);
+    }
+
+    form {
+      display: none;
+      margin-top: 8px;
+    }
+
+    form.active {
+      display: block;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+      color: #475569;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1px solid #cbd5f5;
+      outline: none;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+
+    .field input:focus {
+      border-color: #0f172a;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.4);
+    }
+
+    .helper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+
+    .primary-btn {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #0f172a, #2563eb);
+      color: #f9fafb;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.45);
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(37, 99, 235, 0.65);
+    }
+
+    .primary-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.5);
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      min-height: 18px;
+    }
+
+    .status span {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .status .error {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .status .success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .logged-in {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f1f5f9;
+      font-size: 0.8rem;
+      color: #0f172a;
+      display: none;
+    }
+
+    .logged-in strong {
+      font-weight: 600;
+    }
+
+    .logout-btn {
+      border: none;
+      background: transparent;
+      color: #ef4444;
+      font-size: 0.78rem;
+      cursor: pointer;
+      margin-left: 8px;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .auth-wrapper {
+        margin: 12px;
+        padding: 20px 18px 24px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="auth-wrapper">
+    <div class="brand">
+      <h1>EarnBDT</h1>
+      <span>Signup / Login একসাথে, Firebase Auth</span>
+    </div>
 
-    <h1>Earn BDT Online</h1>
-    
-    <button class="ad-button" onclick="watchVideoAd()">Watch Ad to Earn</button>
+    <!-- Tabs -->
+    <div class="tab-switch">
+      <button id="tab-login" class="tab-btn active">Login</button>
+      <button id="tab-signup" class="tab-btn">Signup</button>
+    </div>
 
-    <div id="status">Click the button to earn points!</div>
+    <!-- Login form -->
+    <form id="login-form" class="active">
+      <div class="field">
+        <label for="login-email">ইমেইল</label>
+        <input type="email" id="login-email" placeholder="example@email.com" required />
+      </div>
+      <div class="field">
+        <label for="login-password">পাসওয়ার্ড</label>
+        <input type="password" id="login-password" placeholder="••••••••" minlength="6" required />
+      </div>
+      <div class="helper">
+        <span>Firebase Email/Password Login</span>
+      </div>
+      <button type="submit" class="primary-btn">Login</button>
+    </form>
 
-    <script>
-        // ১. অ্যাপের জাভা কোডকে কল করার ফাংশন
-        function watchVideoAd() {
-            if (window.Android && window.Android.showAd) {
-                document.getElementById('status').innerText = "Loading Ad...";
-                window.Android.showAd(); // এটি স্কেচওয়্যার অ্যাপের ইন্টারফেসকে কল করবে
-            } else {
-                alert("Please open this website through our official App to watch ads.");
-            }
+    <!-- Signup form -->
+    <form id="signup-form">
+      <div class="field">
+        <label for="signup-name">নাম</label>
+        <input type="text" id="signup-name" placeholder="আপনার নাম" required />
+      </div>
+      <div class="field">
+        <label for="signup-email">ইমেইল</label>
+        <input type="email" id="signup-email" placeholder="example@email.com" required />
+      </div>
+      <div class="field">
+        <label for="signup-password">পাসওয়ার্ড</label>
+        <input type="password" id="signup-password" placeholder="কমপক্ষে ৬ অক্ষর" minlength="6" required />
+      </div>
+      <div class="field">
+        <label for="signup-confirm">কনফার্ম পাসওয়ার্ড</label>
+        <input type="password" id="signup-confirm" placeholder="আবার পাসওয়ার্ড লিখুন" minlength="6" required />
+      </div>
+      <button type="submit" class="primary-btn">Create Account</button>
+    </form>
+
+    <!-- Status messages -->
+    <div class="status" id="status"></div>
+
+    <!-- Logged-in state -->
+    <div class="logged-in" id="logged-in-box">
+      লগইন করেছেন: <strong id="user-email"></strong>
+      <button class="logout-btn" id="logout-btn">Logout</button>
+    </div>
+  </div>
+
+  <!-- Firebase v9 compat SDK (Easy syntax) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // আপনার দেওয়া firebaseConfig
+    const firebaseConfig = {
+      apiKey: "AIzaSyAk-1oYIaRLmvUvVtMJd1AjzqUswxqvn7M",
+      authDomain: "earnbdt-acl-app.firebaseapp.com",
+      databaseURL: "https://earnbdt-acl-app-default-rtdb.firebaseio.com",
+      projectId: "earnbdt-acl-app",
+      storageBucket: "earnbdt-acl-app.firebasestorage.app",
+      messagingSenderId: "494434588404",
+      appId: "1:494434588404:web:ec6af909ffa64c80f1f0a1",
+      measurementId: "G-GXMV451BLC"
+    };
+
+    // Firebase init
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // UI elements
+    const tabLogin = document.getElementById("tab-login");
+    const tabSignup = document.getElementById("tab-signup");
+    const loginForm = document.getElementById("login-form");
+    const signupForm = document.getElementById("signup-form");
+    const statusBox = document.getElementById("status");
+    const loggedInBox = document.getElementById("logged-in-box");
+    const userEmailSpan = document.getElementById("user-email");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    // Tab switch
+    tabLogin.addEventListener("click", () => {
+      tabLogin.classList.add("active");
+      tabSignup.classList.remove("active");
+      loginForm.classList.add("active");
+      signupForm.classList.remove("active");
+      statusBox.innerHTML = "";
+    });
+
+    tabSignup.addEventListener("click", () => {
+      tabSignup.classList.add("active");
+      tabLogin.classList.remove("active");
+      signupForm.classList.add("active");
+      loginForm.classList.remove("active");
+      statusBox.innerHTML = "";
+    });
+
+    function showStatus(message, type = "error") {
+      // type: "error" or "success"
+      statusBox.innerHTML = `<span class="${type}">${message}</span>`;
+    }
+
+    // Signup form submit
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("signup-name").value.trim();
+      const email = document.getElementById("signup-email").value.trim();
+      const pass = document.getElementById("signup-password").value;
+      const confirm = document.getElementById("signup-confirm").value;
+
+      if (!name) {
+        showStatus("নাম লিখুন", "error");
+        return;
+      }
+      if (pass !== confirm) {
+        showStatus("পাসওয়ার্ড মিলছে না", "error");
+        return;
+      }
+      if (pass.length < 6) {
+        showStatus("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে", "error");
+        return;
+      }
+
+      try {
+        const cred = await auth.createUserWithEmailAndPassword(email, pass);
+        if (cred.user) {
+          await cred.user.updateProfile({ displayName: name });
         }
+        showStatus("একাউন্ট তৈরি হয়েছে, এখন লগইন অবস্থায় আছেন।", "success");
+      } catch (err) {
+        showStatus(err.message, "error");
+      }
+    });
 
-        // ২. অ্যাড দেখা শেষ হলে অ্যাপ এই ফাংশনটি কল করবে
-        function rewardSuccess() {
-            document.getElementById('status').innerText = "Congratulations! You earned 10 points.";
-            document.getElementById('status').style.color = "green";
-            
-            // এখানে আপনার ডাটাবেজে পয়েন্ট যোগ করার কোড লিখতে পারেন
-            console.log("Reward successfully granted!");
-        }
-    </script>
+    // Login form submit
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      const pass = document.getElementById("login-password").value;
 
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+        showStatus("সফলভাবে লগইন হয়েছে।", "success");
+      } catch (err) {
+        showStatus(err.message, "error");
+      }
+    });
+
+    // Logout
+    logoutBtn.addEventListener("click", async () => {
+      await auth.signOut();
+    });
+
+    // Auth state listener
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        // Logged in
+        userEmailSpan.textContent = user.email || user.displayName || "Unknown";
+        loggedInBox.style.display = "block";
+      } else {
+        // Logged out
+        loggedInBox.style.display = "none";
+      }
+    });
+  </script>
 </body>
 </html>
-
