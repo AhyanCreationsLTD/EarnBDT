@@ -1,772 +1,101 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>EarnBDT - Admin Panel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "Poppins", sans-serif;
-    }
-
-    body {
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #020617, #020617 55%);
-      color: #e5e7eb;
-      display: flex;
-      justify-content: center;
-      padding: 16px 8px;
-    }
-
-    .shell {
-      width: 100%;
-      max-width: 1200px;
-      background: rgba(15, 23, 42, 0.98);
-      border-radius: 20px;
-      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.9);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .shell::before,
-    .shell::after {
-      content: "";
-      position: absolute;
-      width: 260px;
-      height: 260px;
-      border-radius: 999px;
-      filter: blur(2px);
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    .shell::before {
-      top: -90px;
-      left: -80px;
-      background: radial-gradient(circle, rgba(59,130,246,0.6), transparent 70%);
-    }
-
-    .shell::after {
-      bottom: -90px;
-      right: -80px;
-      background: radial-gradient(circle, rgba(34,197,94,0.6), transparent 70%);
-    }
-
-    .content {
-      position: relative;
-      z-index: 1;
-      padding: 14px 16px 16px;
-    }
-
-    @media (max-width: 768px) {
-      .content {
-        padding: 12px 8px 12px;
-      }
-    }
-
-    /* Top bar */
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-logo {
-      width: 34px;
-      height: 34px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #f97316, #facc15);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      color: #0f172a;
-      font-size: 1rem;
-      box-shadow: 0 10px 24px rgba(248, 250, 252, 0.6);
-    }
-
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .brand-text h1 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-
-    .brand-text span {
-      font-size: 0.78rem;
-      color: #9ca3af;
-    }
-
-    .admin-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 999px;
-      padding: 4px 8px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-    }
-
-    .admin-avatar {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #22c55e, #22c1f1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #020617;
-    }
-
-    .admin-text {
-      font-size: 0.75rem;
-    }
-
-    .admin-name {
-      font-weight: 600;
-    }
-
-    .admin-email {
-      color: #9ca3af;
-    }
-
-    .logout-btn {
-      border: none;
-      background: rgba(248,113,113,0.12);
-      color: #fecaca;
-      border-radius: 999px;
-      padding: 3px 10px;
-      font-size: 0.7rem;
-      cursor: pointer;
-      margin-left: 4px;
-      transition: background 0.15s ease, transform 0.1s ease;
-    }
-
-    .logout-btn:hover {
-      background: rgba(248,113,113,0.25);
-      transform: translateY(-1px);
-    }
-
-    /* Stats row */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    @media (max-width: 900px) {
-      .stats-row {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 520px) {
-      .stats-row {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .stat-card {
-      background: rgba(15,23,42,0.95);
-      border-radius: 14px;
-      padding: 8px 9px;
-      border: 1px solid rgba(148,163,184,0.6);
-      box-shadow: 0 6px 18px rgba(15,23,42,0.8);
-    }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: #9ca3af;
-      margin-bottom: 2px;
-    }
-
-    .stat-value {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: #f9fafb;
-    }
-
-    .stat-sub {
-      font-size: 0.7rem;
-      color: #6ee7b7;
-      margin-top: 2px;
-    }
-
-    /* Tabs */
-    .tabs {
-      display: flex;
-      border-bottom: 1px solid rgba(51,65,85,0.8);
-      margin-bottom: 8px;
-      margin-top: 4px;
-    }
-
-    .tab-btn {
-      border: none;
-      background: transparent;
-      padding: 7px 12px;
-      font-size: 0.85rem;
-      color: #9ca3af;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-right: 4px;
-      transition: color 0.15s ease, border-color 0.15s ease;
-    }
-
-    .tab-btn.active {
-      color: #e5e7eb;
-      border-color: #22c55e;
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    /* Tables */
-    .table-wrapper {
-      background: rgba(15,23,42,0.96);
-      border-radius: 16px;
-      border: 1px solid rgba(55,65,81,0.9);
-      box-shadow: 0 8px 22px rgba(15,23,42,0.9);
-      padding: 8px 9px;
-      overflow: auto;
-      max-height: 480px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.8rem;
-    }
-
-    thead {
-      background: rgba(15,23,42,0.9);
-    }
-
-    th, td {
-      padding: 6px 7px;
-      border-bottom: 1px solid rgba(31,41,55,0.9);
-      white-space: nowrap;
-    }
-
-    th {
-      text-align: left;
-      font-weight: 500;
-      color: #9ca3af;
-      font-size: 0.76rem;
-    }
-
-    tbody tr:hover {
-      background: rgba(15,23,42,0.85);
-    }
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 7px;
-      border-radius: 999px;
-      font-size: 0.7rem;
-    }
-
-    .status-pending {
-      background: rgba(248, 250, 252, 0.08);
-      color: #facc15;
-      border: 1px solid rgba(234,179,8,0.7);
-    }
-
-    .status-approved {
-      background: rgba(16,185,129,0.12);
-      color: #6ee7b7;
-      border: 1px solid rgba(34,197,94,0.8);
-    }
-
-    .status-rejected {
-      background: rgba(248,113,113,0.12);
-      color: #fecaca;
-      border: 1px solid rgba(248,113,113,0.8);
-    }
-
-    .status-paid {
-      background: rgba(59,130,246,0.12);
-      color: #bfdbfe;
-      border: 1px solid rgba(59,130,246,0.8);
-    }
-
-    .btn-sm {
-      border: none;
-      border-radius: 999px;
-      padding: 3px 8px;
-      font-size: 0.7rem;
-      cursor: pointer;
-      margin-right: 4px;
-      margin-top: 2px;
-    }
-
-    .btn-approve {
-      background: rgba(16,185,129,0.16);
-      color: #6ee7b7;
-      border: 1px solid rgba(34,197,94,0.8);
-    }
-
-    .btn-reject {
-      background: rgba(248,113,113,0.12);
-      color: #fecaca;
-      border: 1px solid rgba(248,113,113,0.8);
-    }
-
-    .btn-paid {
-      background: rgba(59,130,246,0.16);
-      color: #bfdbfe;
-      border: 1px solid rgba(59,130,246,0.8);
-    }
-
-    .btn-ban {
-      background: rgba(248,113,113,0.12);
-      color: #fecaca;
-      border: 1px solid rgba(248,113,113,0.8);
-    }
-
-    .btn-unban {
-      background: rgba(34,197,94,0.14);
-      color: #bbf7d0;
-      border: 1px solid rgba(34,197,94,0.8);
-    }
-
-    .btn-premium {
-      background: rgba(234,179,8,0.12);
-      color: #fef9c3;
-      border: 1px solid rgba(234,179,8,0.9);
-    }
-
-    .btn-remove {
-      background: rgba(15,23,42,0.9);
-      color: #94a3b8;
-      border: 1px solid rgba(71,85,105,0.9);
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 7px;
-      border-radius: 999px;
-      font-size: 0.7rem;
-      background: rgba(59,130,246,0.12);
-      color: #bfdbfe;
-      border: 1px solid rgba(59,130,246,0.8);
-    }
-
-    .tag.banned {
-      background: rgba(248,113,113,0.12);
-      color: #fecaca;
-      border-color: rgba(248,113,113,0.8);
-    }
-
-    .tag.premium {
-      background: rgba(234,179,8,0.12);
-      color: #fef9c3;
-      border-color: rgba(234,179,8,0.9);
-    }
-
-    .filter-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 4px;
-      font-size: 0.78rem;
-      color: #9ca3af;
-    }
-
-    .filter-row select {
-      background: rgba(15,23,42,0.9);
-      color: #e5e7eb;
-      border-radius: 999px;
-      border: 1px solid rgba(55,65,81,0.9);
-      padding: 3px 8px;
-      font-size: 0.78rem;
-      outline: none;
-    }
-
-    /* Simple toast */
-    .toast {
-      position: fixed;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15,23,42,0.98);
-      color: #e5e7eb;
-      padding: 6px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.8);
-      font-size: 0.78rem;
-      display: none;
-      z-index: 50;
-      box-shadow: 0 8px 22px rgba(15,23,42,0.9);
-    }
-
-    /* Small error overlay if not admin */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15,23,42,0.95);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 99;
-    }
-
-    .overlay-box {
-      background: rgba(15,23,42,1);
-      padding: 16px 16px 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(248,113,113,0.8);
-      max-width: 320px;
-      text-align: center;
-      box-shadow: 0 16px 40px rgba(15,23,42,0.9);
-    }
-
-    .overlay-title {
-      font-size: 0.98rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #fecaca;
-    }
-
-    .overlay-text {
-      font-size: 0.78rem;
-      color: #e5e7eb;
-      margin-bottom: 10px;
-    }
-
-    .overlay-btn {
-      border: none;
-      background: rgba(248,113,113,0.2);
-      color: #fecaca;
-      border-radius: 999px;
-      padding: 5px 12px;
-      font-size: 0.78rem;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>EarnBDT | Admin Panel</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f4f4f4;padding:20px;}
+h2{text-align:center;margin-bottom:20px;}
+.card{background:#fff;padding:15px;margin-bottom:15px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.2);}
+.card h3{margin:0;color:#333;}
+.card p{margin:5px 0;color:#555;}
+.card button{padding:8px 12px;margin-right:10px;border:none;border-radius:8px;color:#fff;cursor:pointer;}
+.approve{background:green;}
+.reject{background:red;}
+.paid{background:#667eea;}
+</style>
 </head>
 <body>
-  <div class="shell">
-    <div class="content">
-      <div class="top-bar">
-        <div class="brand">
-          <div class="brand-logo">AD</div>
-          <div class="brand-text">
-            <h1>ADMIN</h1>
-            <span>EarnBDT Control Panel</span>
-          </div>
-        </div>
-        <div class="admin-info">
-          <div class="admin-avatar" id="admin-avatar">A</div>
-          <div class="admin-text">
-            <div class="admin-name" id="admin-name">Admin</div>
-            <div class="admin-email" id="admin-email">admin@example.com</div>
-          </div>
-          <button class="logout-btn" id="logout-btn">Logout</button>
-        </div>
-      </div>
 
-      <!-- Stats -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-label">Total Users</div>
-          <div class="stat-value" id="stat-total-users">0</div>
-          <div class="stat-sub">Active + Banned + Removed</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Pending Withdrawals</div>
-          <div class="stat-value" id="stat-pending-withdraw">0</div>
-          <div class="stat-sub">Need approval</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Withdrawn (৳)</div>
-          <div class="stat-value" id="stat-total-withdrawn">0</div>
-          <div class="stat-sub">Status = paid</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Banned Users</div>
-          <div class="stat-value" id="stat-banned-users">0</div>
-          <div class="stat-sub">status = banned</div>
-        </div>
-      </div>
+<h2>Admin Panel - Withdraw Requests</h2>
+<div id="requestsContainer"></div>
 
-      <!-- Tabs -->
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="withdraw-tab">Withdraw Requests</button>
-        <button class="tab-btn" data-tab="users-tab">Users</button>
-      </div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, get, update, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-      <!-- Withdraw Tab -->
-      <div id="withdraw-tab" class="tab-content active">
-        <div class="filter-row">
-          <div>Withdraw Requests</div>
-          <div>
-            <label for="withdraw-filter" style="margin-right:4px;">Filter:</label>
-            <select id="withdraw-filter">
-              <option value="all">All</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-              <option value="paid">Paid</option>
-            </select>
-          </div>
-        </div>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>User</th>
-                <th>Amount</th>
-                <th>Method</th>
-                <th>Status</th>
-                <th>Requested</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="withdraw-tbody">
-              <!-- Filled by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
+const firebaseConfig = {
+  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
+  authDomain: "earnbdtapp.firebaseapp.com",
+  databaseURL: "https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "earnbdtapp",
+  storageBucket: "earnbdtapp.firebasestorage.app",
+  messagingSenderId: "407276444050",
+  appId: "1:407276444050:web:b6ff2e075202716b5e094b"
+};
 
-      <!-- Users Tab -->
-      <div id="users-tab" class="tab-content">
-        <div class="filter-row">
-          <div>Users</div>
-          <div style="font-size:0.74rem;color:#9ca3af;">Ban / Remove / Premium এখানে কন্ট্রোল করুন</div>
-        </div>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>UID</th>
-                <th>Name / Email</th>
-                <th>Status</th>
-                <th>Premium</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="users-tbody">
-              <!-- Filled by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-    <div class="toast" id="toast"></div>
+async function loadRequests(){
+  const reqRef = ref(db,"withdrawals");
+  const snap = await get(reqRef);
+  const container = document.getElementById("requestsContainer");
+  container.innerHTML="";
+  if(snap.exists()){
+    const allReq = snap.val();
+    Object.entries(allReq).forEach(([key,req])=>{
+      const div = document.createElement("div");
+      div.className="card";
+      div.innerHTML=`<h3>${req.username} - ${req.amount} BDT (${req.method})</h3>
+                     <p>Email: ${req.email}</p>
+                     <p>Number: ${req.number}</p>
+                     <p>Status: ${req.status}</p>`;
 
-    <!-- Not-admin overlay -->
-    <div class="overlay" id="overlay">
-      <div class="overlay-box">
-        <div class="overlay-title">Access Denied</div>
-        <div class="overlay-text">
-          এই প্যানেলটি শুধু অনুমোদিত Admin একাউন্টের জন্য।<br>
-          আপনি যদি Admin না হন, Dashboard এ ফিরে যান।
-        </div>
-        <button class="overlay-btn" id="overlay-btn">Go to Dashboard</button>
-      </div>
-    </div>
-  </div>
+      if(req.status==="Pending"){
+        const approveBtn = document.createElement("button");
+        approveBtn.className="approve";
+        approveBtn.textContent="Approve";
+        approveBtn.onclick=async ()=>{
+          await update(ref(db,"withdrawals/"+key),{status:"Approved"});
+          loadRequests();
+        };
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+        const rejectBtn = document.createElement("button");
+        rejectBtn.className="reject";
+        rejectBtn.textContent="Reject";
+        rejectBtn.onclick=async ()=>{
+          await update(ref(db,"withdrawals/"+key),{status:"Rejected"});
+          // Restore user balance
+          const balRef = ref(db,"users/"+req.uid+"/balance");
+          const balSnap = await get(balRef);
+          let currentBalance = balSnap.val()||0;
+          await update(balRef,{balance: currentBalance + req.amount});
+          loadRequests();
+        };
 
-  <script>
-    // === Firebase Config ===
-    const firebaseConfig = {
-      apiKey: "AIzaSyAk-1oYIaRLmvUvVtMJd1AjzqUswxqvn7M",
-      authDomain: "earnbdt-acl-app.firebaseapp.com",
-      databaseURL: "https://earnbdt-acl-app-default-rtdb.firebaseio.com",
-      projectId: "earnbdt-acl-app",
-      storageBucket: "earnbdt-acl-app.firebasestorage.app",
-      messagingSenderId: "494434588404",
-      appId: "1:494434588404:web:ec6af909ffa64c80f1f0a1",
-      measurementId: "G-GXMV451BLC"
-    };
+        const paidBtn = document.createElement("button");
+        paidBtn.className="paid";
+        paidBtn.textContent="Paid";
+        paidBtn.onclick=async ()=>{
+          await update(ref(db,"withdrawals/"+key),{status:"Paid"});
+          loadRequests();
+        };
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    // যেসব ইমেইল admin হিসেবে প্যানেল ব্যবহার করতে পারবে
-    const ADMIN_EMAILS = [
-      "ahyanarfinofficial@gmail.com"
-      // চাইলে আরও অ্যাড করো
-      // "anotheradmin@example.com"
-    ];
-
-    const adminNameEl = document.getElementById("admin-name");
-    const adminEmailEl = document.getElementById("admin-email");
-    const adminAvatarEl = document.getElementById("admin-avatar");
-    const logoutBtn = document.getElementById("logout-btn");
-
-    const statTotalUsers = document.getElementById("stat-total-users");
-    const statPendingWithdraw = document.getElementById("stat-pending-withdraw");
-    const statTotalWithdrawn = document.getElementById("stat-total-withdrawn");
-    const statBannedUsers = document.getElementById("stat-banned-users");
-
-    const withdrawTbody = document.getElementById("withdraw-tbody");
-    const usersTbody = document.getElementById("users-tbody");
-    const withdrawFilter = document.getElementById("withdraw-filter");
-    const toastEl = document.getElementById("toast");
-
-    const overlay = document.getElementById("overlay");
-    const overlayBtn = document.getElementById("overlay-btn");
-
-    let withdrawData = {};
-    let userData = {};
-
-    function showToast(msg) {
-      toastEl.textContent = msg;
-      toastEl.style.display = "block";
-      setTimeout(() => {
-        toastEl.style.display = "none";
-      }, 2000);
-    }
-
-    // Tabs
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const tabId = btn.getAttribute("data-tab");
-        document.querySelectorAll(".tab-content").forEach(tc => {
-          tc.classList.remove("active");
-        });
-        document.getElementById(tabId).classList.add("active");
-      });
-    });
-
-    // Auth / Admin check
-    auth.onAuthStateChanged((user) => {
-      if (!user) {
-        // লগইন নাই → index.html এ পাঠিয়ে দাও
-        window.location.href = "index.html";
-        return;
+        div.appendChild(approveBtn);
+        div.appendChild(rejectBtn);
+        div.appendChild(paidBtn);
       }
 
-      const email = user.email || "";
-      const name = user.displayName || (email ? email.split("@")[0] : "Admin");
-
-      if (!ADMIN_EMAILS.includes(email)) {
-        // Admin না হলে overlay দেখাও
-        overlay.style.display = "flex";
-        return;
-      }
-
-      // Admin OK
-      adminNameEl.textContent = name;
-      adminEmailEl.textContent = email;
-      adminAvatarEl.textContent = name.charAt(0).toUpperCase();
-
-      // ডেটা লোড করো
-      subscribeUsers();
-      subscribeWithdraws();
+      container.appendChild(div);
     });
+  }else{
+    container.innerHTML="<p>No Withdraw Requests Found</p>";
+  }
+}
 
-    // overlay button → dashboard
-    overlayBtn.addEventListener("click", () => {
-      window.location.href = "dashboard.html";
-    });
+loadRequests();
+</script>
 
-    // Logout
-    logoutBtn.addEventListener("click", async () => {
-      await auth.signOut();
-      window.location.href = "index.html";
-    });
-
-    // Subscribe to users
-    function subscribeUsers() {
-      db.ref("users").on("value", (snap) => {
-        const val = snap.val() || {};
-        userData = val;
-        renderUsers();
-        updateUserStats();
-      });
-    }
-
-    // Subscribe to withdrawRequests
-    function subscribeWithdraws() {
-      db.ref("withdrawRequests").on("value", (snap) => {
-        const val = snap.val() || {};
-        withdrawData = val;
-        renderWithdraws();
-        updateWithdrawStats();
-      });
-    }
-
-    // Render users table
-    function renderUsers() {
-      usersTbody.innerHTML = "";
-      const entries = Object.entries(userData); // [uid, data]
-
-      entries.forEach(([uid, u]) => {
-        const tr = document.createElement("tr");
-
-        const status = u.status || "active";
-        const isPremium = !!u.isPremium;
-        const name = u.name || "N/A";
-        const email = u.email || "no-email";
-
-        const tdUid = document.createElement("td");
-        tdUid.textContent = uid.slice(0, 6) + "...";
-        tdUid.title = uid;
-
-        const tdNameEmail = document.createElement("td");
-        tdNameEmail.innerHTML = `
-          <div style="font-size:0.8rem;font-weight:500;">${name}</div>
-          <div style="font-size:0.72rem;color:#9ca3af;">${email}</div>
-        `;
-
-        const tdStatus = document.createElement("td");
-        let tagClass = "tag";
-        if (status === "banned") tagClass += " banned";
-        if (status === "removed") tagClass += " banned"; // removed also treated as red
-        tdStatus.innerHTML = `<span class="${tagClass}">${status}</span>`;
-
-        const tdPremium = document.createElement("td");
-        tdPremium.innerHTML = isPremium
-          ? `<span class="tag premium">Premium</span>`
-          : `<span class="tag">Normal</span>`;
-
-        const tdActions = document.createElement("td");
-
-        // Ban / Unban
-        const btnBan = document.createElement("button");
-        if (status === "banned") {
-          btnBan.textContent = "Unba
+</body>
+</html>
