@@ -1,13 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <title>EarnBDT - Login / Signup</title>
+  <title>EarnBDT - Earn Real Money</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -19,486 +18,591 @@
 
     body {
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       background: radial-gradient(circle at top, #1d4ed8, #020617 55%);
-      padding: 16px;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      padding: 14px 10px;
     }
 
-    .auth-card {
+    .page {
       width: 100%;
-      max-width: 420px;
-      background: rgba(15, 23, 42, 0.98);
-      color: #e5e7eb;
-      border-radius: 18px;
-      padding: 22px 20px 24px;
-      box-shadow: 0 20px 55px rgba(15, 23, 42, 0.9);
+      max-width: 1100px;
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 22px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.95);
       position: relative;
       overflow: hidden;
     }
 
-    .auth-card::before {
+    .page::before,
+    .page::after {
       content: "";
       position: absolute;
-      width: 220px;
-      height: 220px;
-      background: radial-gradient(circle, rgba(56,189,248,0.6), transparent 70%);
-      top: -60px;
-      right: -40px;
-      opacity: 0.7;
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      pointer-events: none;
+      opacity: 0.5;
+      filter: blur(2px);
     }
 
-    .auth-inner {
+    .page::before {
+      top: -90px;
+      left: -80px;
+      background: radial-gradient(circle, rgba(59,130,246,0.6), transparent 70%);
+    }
+
+    .page::after {
+      bottom: -90px;
+      right: -80px;
+      background: radial-gradient(circle, rgba(34,197,94,0.6), transparent 70%);
+    }
+
+    .content {
       position: relative;
       z-index: 1;
+      padding: 16px 18px 18px;
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        padding: 12px 10px 14px;
+      }
+    }
+
+    /* Splash Screen */
+    .splash {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, #1d4ed8, #020617 60%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.7s ease;
+    }
+
+    .splash.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .splash-inner {
+      text-align: center;
+      max-width: 500px;
+      padding: 20px;
+    }
+
+    .splash-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .splash-sub {
+      font-size: 0.95rem;
+      color: #e5e7eb;
+      margin-bottom: 8px;
+    }
+
+    .splash-note {
+      font-size: 0.8rem;
+      color: #cbd5f5;
+      margin-top: 6px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
     }
 
     .brand {
-      text-align: center;
-      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .brand-title {
-      font-size: 1.5rem;
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #22c55e, #22c1f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #020617;
+      font-size: 1.1rem;
+      box-shadow: 0 12px 28px rgba(34,197,94,0.9);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-text h1 {
+      font-size: 1.2rem;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
     }
 
-    .brand-sub {
-      font-size: 0.8rem;
-      color: #9ca3af;
-      margin-top: 2px;
-    }
-
-    .tab-switch {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: #0b1220;
-      padding: 4px;
-      border-radius: 999px;
-      margin-bottom: 16px;
-      border: 1px solid rgba(148,163,184,0.7);
-    }
-
-    .tab-btn {
-      border: none;
-      background: transparent;
-      padding: 7px 0;
-      border-radius: 999px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      color: #9ca3af;
-      transition: all 0.25s ease;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(135deg, #22c55e, #22c1f1);
-      color: #0b1120;
-      box-shadow: 0 10px 24px rgba(34,197,94,0.7);
-    }
-
-    .auth-title {
-      font-size: 1.05rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .auth-subtitle {
-      font-size: 0.8rem;
-      color: #9ca3af;
-      margin-bottom: 12px;
-    }
-
-    form {
-      display: none;
-    }
-
-    form.active {
-      display: block;
-    }
-
-    .field {
-      margin-bottom: 11px;
-    }
-
-    .field label {
-      display: block;
+    .brand-text span {
       font-size: 0.78rem;
-      margin-bottom: 4px;
-      color: #cbd5f5;
+      color: #9ca3af;
     }
 
-    .field input {
-      width: 100%;
-      padding: 9px 11px;
-      border-radius: 10px;
-      border: 1px solid #334155;
-      outline: none;
-      font-size: 0.9rem;
-      background: #020617;
-      color: #e5e7eb;
-      transition: all 0.2s ease;
+    .header-links {
+      font-size: 0.78rem;
+      color: #9ca3af;
     }
 
-    .field input::placeholder {
-      color: #64748b;
+    /* Hero */
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
+      gap: 14px;
+      margin-bottom: 16px;
     }
 
-    .field input:focus {
-      border-color: #22c55e;
-      box-shadow: 0 0 0 1px rgba(34,197,94,0.7);
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
     }
 
-    .helper {
-      font-size: 0.75rem;
-      color: #94a3b8;
+    .hero-left-title {
+      font-size: 1.4rem;
+      font-weight: 700;
       margin-bottom: 6px;
     }
 
-    .primary-btn {
-      width: 100%;
+    .hero-left-sub {
+      font-size: 0.86rem;
+      color: #cbd5f5;
+      margin-bottom: 10px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.8);
+      font-size: 0.72rem;
+      color: #e5e7eb;
+      margin-bottom: 8px;
+    }
+
+    .hero-badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      margin-right: 5px;
+    }
+
+    .hero-buttons {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
       border: none;
       border-radius: 999px;
-      padding: 9px 0;
-      font-size: 0.95rem;
+      padding: 8px 18px;
+      font-size: 0.9rem;
       font-weight: 600;
       background: linear-gradient(135deg, #22c55e, #22c1f1);
       color: #020617;
       cursor: pointer;
-      margin-top: 4px;
-      box-shadow: 0 12px 28px rgba(34,197,94,0.8);
-      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      box-shadow: 0 12px 28px rgba(34,197,94,0.9);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .primary-btn:hover {
+    .btn-primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 14px 34px rgba(34,197,94,0.9);
+      box-shadow: 0 16px 36px rgba(34,197,94,1);
     }
 
-    .primary-btn:active {
-      transform: translateY(0);
-      box-shadow: 0 10px 22px rgba(15,23,42,0.9);
-    }
-
-    .primary-btn.disabled {
-      opacity: 0.7;
-      cursor: default;
-      box-shadow: none;
-      transform: none;
-    }
-
-    .status {
-      margin-top: 10px;
-      font-size: 0.78rem;
-      min-height: 20px;
-    }
-
-    .status span {
-      display: inline-block;
-      padding: 5px 9px;
+    .btn-secondary {
       border-radius: 999px;
-    }
-
-    .status .error {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
-
-    .status .success {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    /* Loader overlay */
-    .loader-overlay {
-      position: absolute;
-      inset: 0;
+      padding: 8px 18px;
+      font-size: 0.9rem;
+      font-weight: 500;
       background: rgba(15,23,42,0.9);
-      display: none;
+      border: 1px solid rgba(148,163,184,0.9);
+      color: #e5e7eb;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(15,23,42,0.8);
+      transform: translateY(-1px);
+    }
+
+    .hero-right {
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 2;
-      backdrop-filter: blur(4px);
-    }
-
-    .loader-box {
       text-align: center;
-      color: #e5e7eb;
+      padding: 10px 6px;
     }
 
-    .spinner {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      border: 3px solid rgba(148,163,184,0.5);
-      border-top-color: #22c55e;
-      animation: spin 0.7s linear infinite;
-      margin: 0 auto 10px;
+    .hero-tagline {
+      font-size: 0.86rem;
+      color: #9ca3af;
+      margin-bottom: 6px;
     }
 
-    .loader-text {
-      font-size: 0.85rem;
+    /* Slider */
+    .slider-container {
+      width: 100%;
+      max-width: 520px;
+      background: rgba(15,23,42,0.95);
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.7);
+      box-shadow: 0 10px 26px rgba(15,23,42,0.95);
+      padding: 10px 10px 12px;
+    }
+
+    .slider-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .slider-sub {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .slides {
+      position: relative;
+      min-height: 110px;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: translateX(5%);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      padding: 6px 4px;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .slide-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .slide-text {
+      font-size: 0.78rem;
       color: #cbd5f5;
+      margin-bottom: 4px;
     }
 
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
+    .slide-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background: rgba(22,163,74,0.16);
+      color: #bbf7d0;
+      border: 1px solid rgba(34,197,94,0.9);
+    }
+
+    .slider-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .dot.active {
+      background: #22c55e;
+      transform: scale(1.1);
+    }
+
+    /* Admin section */
+    .admin-section {
+      margin-top: 18px;
+      background: rgba(15,23,42,0.96);
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.7);
+      box-shadow: 0 10px 26px rgba(15,23,42,0.95);
+      padding: 12px 12px 12px;
+    }
+
+    .admin-title {
+      font-size: 0.96rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .admin-text {
+      font-size: 0.8rem;
+      color: #e5e7eb;
+      line-height: 1.6;
+    }
+
+    .admin-text p {
+      margin-bottom: 8px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #9ca3af;
+      margin-top: 10px;
+      padding-bottom: 4px;
     }
   </style>
 </head>
 <body>
-  <div class="auth-card">
-    <!-- Loader overlay (২ সেকেন্ডের প্রগ্রেস) -->
-    <div class="loader-overlay" id="loader">
-      <div class="loader-box">
-        <div class="spinner"></div>
-        <div class="loader-text" id="loader-text">Processing...</div>
+  <!-- Splash Screen -->
+  <div class="splash" id="splash">
+    <div class="splash-inner">
+      <div class="splash-title">Welcome to EarnBDT</div>
+      <div class="splash-sub">Earn Real Money by Watching Ads and Completing Tasks</div>
+      <div class="splash-note">
+        This app is created by <strong>Md. Abdullah</strong> and it's a part of
+        <strong>Ahyan Creations LTD</strong>.
       </div>
-    </div>
-
-    <div class="auth-inner">
-      <div class="brand">
-        <div class="brand-title">EarnBDT</div>
-        <div class="brand-sub">Login & Signup</div>
-      </div>
-
-      <div class="tab-switch">
-        <button id="tab-login" class="tab-btn active">Login</button>
-        <button id="tab-signup" class="tab-btn">Signup</button>
-      </div>
-
-      <div class="auth-title">Welcome!</div>
-      <div class="auth-subtitle">আগে একাউন্ট থাকলে Login করুন, নাহলে নতুন Signup করুন।</div>
-
-      <!-- Login form -->
-      <form id="login-form" class="active">
-        <div class="field">
-          <label for="login-email">ইমেইল</label>
-          <input type="email" id="login-email" placeholder="you@example.com" required>
-        </div>
-        <div class="field">
-          <label for="login-password">পাসওয়ার্ড</label>
-          <input type="password" id="login-password" placeholder="••••••••" minlength="6" required>
-        </div>
-        <div class="helper">
-          Email/Password Login • পাসওয়ার্ড কমপক্ষে ৬ অক্ষর।
-        </div>
-        <button type="submit" class="primary-btn" id="login-btn">Login</button>
-      </form>
-
-      <!-- Signup form -->
-      <form id="signup-form">
-        <div class="field">
-          <label for="signup-name">নাম</label>
-          <input type="text" id="signup-name" placeholder="আপনার নাম" required>
-        </div>
-        <div class="field">
-          <label for="signup-email">ইমেইল</label>
-          <input type="email" id="signup-email" placeholder="you@example.com" required>
-        </div>
-        <div class="field">
-          <label for="signup-password">পাসওয়ার্ড</label>
-          <input type="password" id="signup-password" placeholder="কমপক্ষে ৬ অক্ষর" minlength="6" required>
-        </div>
-        <div class="field">
-          <label for="signup-confirm">কনফার্ম পাসওয়ার্ড</label>
-          <input type="password" id="signup-confirm" placeholder="আবার পাসওয়ার্ড লিখুন" minlength="6" required>
-        </div>
-        <button type="submit" class="primary-btn" id="signup-btn">Create Account</button>
-      </form>
-
-      <div class="status" id="status"></div>
     </div>
   </div>
 
-  <!-- Firebase SDK (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <!-- Main Page -->
+  <div class="page">
+    <div class="content">
+      <!-- Header -->
+      <div class="header">
+        <div class="brand">
+          <div class="brand-logo">BD</div>
+          <div class="brand-text">
+            <h1>EarnBDT</h1>
+            <span>Smart Earning • Trusted Platform</span>
+          </div>
+        </div>
+        <div class="header-links">
+          Watch Ads • Daily Tasks • Instant Withdraw
+        </div>
+      </div>
+
+      <!-- Hero -->
+      <div class="hero">
+        <div>
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            EarnBDT - For Bangladeshi Users
+          </div>
+          <div class="hero-left-title">
+            বাড়তি আয়ের চমৎকার একটি সমাধান — EarnBDT
+          </div>
+          <div class="hero-left-sub">
+            এখান থেকে আপনি Ad দেখে, Daily Task পূরণ করে এবং Refer এর মাধ্যমে
+            Real Money (BDT পয়েন্ট) আয় করতে পারবেন। নিরাপদ ও স্মার্ট প্ল্যাটফর্ম
+            - যেটি তৈরী করেছেন Md. Abdullah, Ahyan Creations LTD এর অংশ হিসেবে।
+          </div>
+
+          <div class="hero-buttons">
+            <a href="login.html" class="btn-primary">
+              Login
+              <span>→</span>
+            </a>
+            <a href="signup.html" class="btn-secondary">
+              Signup
+              <span>+</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="hero-tagline">কীভাবে EarnBDT থেকে আয় করবেন?</div>
+
+          <div class="slider-container">
+            <div class="slider-title">আয়ের উপায় (Slide আকারে)</div>
+            <div class="slider-sub">নিচের স্লাইডগুলোতে আপনার আয়ের প্রধান উপায়গুলো দেখুন।</div>
+
+            <div class="slides">
+              <div class="slide active">
+                <div class="slide-title">১. Watch Ads & Earn</div>
+                <div class="slide-text">
+                  Rewarded Ads দেখে প্রতি ভিউতে পয়েন্ট অর্জন করুন। Daily limit
+                  এর মধ্যে যতটা পারেন EarnBDT এর মাধ্যমে আয় করে নিন।
+                </div>
+                <div class="slide-tag">Instant Ad Rewards</div>
+              </div>
+
+              <div class="slide">
+                <div class="slide-title">২. Daily Rewards</div>
+                <div class="slide-text">
+                  প্রতিদিন শুধু লগইন করেই পেতে পারেন Daily Login Bonus. Streak
+                  বাড়ালেই বাড়বে বোনাসের পরিমাণ।
+                </div>
+                <div class="slide-tag">Login Streak Bonus</div>
+              </div>
+
+              <div class="slide">
+                <div class="slide-title">৩. Daily Tasks</div>
+                <div class="slide-text">
+                  App install, survey, social follow, ছোট ছোট কাজ সম্পন্ন করেই
+                  অর্জন করুন Extra আয়। কাজ যত বেশি, আয় তত বেশি।
+                </div>
+                <div class="slide-tag">High Paying Tasks</div>
+              </div>
+
+              <div class="slide">
+                <div class="slide-title">৪. Refer & Earn</div>
+                <div class="slide-text">
+                  আপনার Refer কোড ব্যবহার করে নতুন ইউজার Join করলেই বোনাস পয়েন্ট।
+                  বন্ধুর আয়ের উপর নির্ভর করে আপনি নিয়মিত পুরস্কার পেতে পারেন।
+                </div>
+                <div class="slide-tag">Unlimited Refer Bonus</div>
+              </div>
+
+              <div class="slide">
+                <div class="slide-title">৫. Secure Withdraw System</div>
+                <div class="slide-text">
+                  নির্দিষ্ট Minimum Balance পূর্ণ হলেই bKash, Nagad, Rocket বা
+                  Bank এর মাধ্যমে নিরাপদ Withdraw নিন। Admin Approval এর মাধ্যমে
+                  দ্রুত Payment।
+                </div>
+                <div class="slide-tag">bKash / Nagad / Rocket</div>
+              </div>
+            </div>
+
+            <div class="slider-dots">
+              <div class="dot active" data-index="0"></div>
+              <div class="dot" data-index="1"></div>
+              <div class="dot" data-index="2"></div>
+              <div class="dot" data-index="3"></div>
+              <div class="dot" data-index="4"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Section -->
+      <div class="admin-section">
+        <div class="admin-title">About Admin – Md. Abdullah & Ahyan Creations LTD</div>
+        <div class="admin-text">
+          <p>
+            Md. Abdullah is a person of exceptional character, integrity, and intellect—a brilliant
+            student and a respected visionary. Always striving for the betterment of others, he
+            constantly imagines innovative ideas and works tirelessly to turn them into reality.
+          </p>
+          <p>
+            In line with this vision, he founded <strong>Ahyan Creations LTD</strong> in 2025. Today,
+            Ahyan Creations LTD has become a renowned name, recognized not only in Bangladesh but
+            across the globe.
+          </p>
+          <p>
+            On behalf of Md. Abdullah and Ahyan Creations LTD, we extend our heartfelt greetings
+            and warmest wishes to everyone. We are committed to continuing this journey for
+            generations to come. With this hope and dedication, we warmly say
+            <strong>Assalamu Alaikum</strong> to all.
+          </p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        @EarnBDT – Ahyan Creations LTD
+      </div>
+    </div>
+  </div>
 
   <script>
-    // আপনার Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAk-1oYIaRLmvUvVtMJd1AjzqUswxqvn7M",
-      authDomain: "earnbdt-acl-app.firebaseapp.com",
-      databaseURL: "https://earnbdt-acl-app-default-rtdb.firebaseio.com",
-      projectId: "earnbdt-acl-app",
-      storageBucket: "earnbdt-acl-app.firebasestorage.app",
-      messagingSenderId: "494434588404",
-      appId: "1:494434588404:web:ec6af909ffa64c80f1f0a1",
-      measurementId: "G-GXMV451BLC"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
-    const REDIRECT_URL = "dashboard.html"; // সফল Login/Signup এর পরে যেই পেইজে যাবে
-
-    // DOM refs
-    const tabLogin = document.getElementById("tab-login");
-    const tabSignup = document.getElementById("tab-signup");
-    const loginForm = document.getElementById("login-form");
-    const signupForm = document.getElementById("signup-form");
-    const statusBox = document.getElementById("status");
-    const loader = document.getElementById("loader");
-    const loaderText = document.getElementById("loader-text");
-    const loginBtn = document.getElementById("login-btn");
-    const signupBtn = document.getElementById("signup-btn");
-
-    function showStatus(message, type = "error") {
-      statusBox.innerHTML = `<span class="${type}">${message}</span>`;
-    }
-
-    function clearStatus() {
-      statusBox.innerHTML = "";
-    }
-
-    function showLoader(message) {
-      loaderText.textContent = message || "Processing...";
-      loader.style.display = "flex";
-      loginBtn.classList.add("disabled");
-      signupBtn.classList.add("disabled");
-      loginBtn.disabled = true;
-      signupBtn.disabled = true;
-    }
-
-    function hideLoader() {
-      loader.style.display = "none";
-      loginBtn.classList.remove("disabled");
-      signupBtn.classList.remove("disabled");
-      loginBtn.disabled = false;
-      signupBtn.disabled = false;
-    }
-
-    // Tab switch
-    tabLogin.addEventListener("click", () => {
-      tabLogin.classList.add("active");
-      tabSignup.classList.remove("active");
-      loginForm.classList.add("active");
-      signupForm.classList.remove("active");
-      clearStatus();
+    // Splash screen: hide after 2 seconds
+    window.addEventListener("load", () => {
+      const splash = document.getElementById("splash");
+      setTimeout(() => {
+        splash.classList.add("hidden");
+      }, 2000);
     });
 
-    tabSignup.addEventListener("click", () => {
-      tabSignup.classList.add("active");
-      tabLogin.classList.remove("active");
-      signupForm.classList.add("active");
-      loginForm.classList.remove("active");
-      clearStatus();
-    });
+    // Simple slider logic
+    const slides = document.querySelectorAll(".slide");
+    const dots = document.querySelectorAll(".dot");
+    let currentSlide = 0;
+    let sliderInterval = null;
 
-    // ২ সেকেন্ডের লোডারসহ নিরাপদভাবে async অপারেশন হ্যান্ডলার
-    async function withTwoSecondDelay(asyncFn, loaderMessage) {
-      showLoader(loaderMessage);
-      const start = Date.now();
-      try {
-        const result = await asyncFn();
-        const elapsed = Date.now() - start;
-        const wait = Math.max(2000 - elapsed, 0);
-        return await new Promise((resolve) =>
-          setTimeout(() => resolve({ ok: true, result }), wait)
-        );
-      } catch (error) {
-        const elapsed = Date.now() - start;
-        const wait = Math.max(2000 - elapsed, 0);
-        return await new Promise((resolve) =>
-          setTimeout(() => resolve({ ok: false, error }), wait)
-        );
-      } finally {
-        hideLoader();
-      }
+    function showSlide(index) {
+      slides.forEach((s, i) => {
+        s.classList.toggle("active", i === index);
+      });
+      dots.forEach((d, i) => {
+        d.classList.toggle("active", i === index);
+      });
+      currentSlide = index;
     }
 
-    // Signup
-    signupForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      clearStatus();
+    function nextSlide() {
+      const nextIndex = (currentSlide + 1) % slides.length;
+      showSlide(nextIndex);
+    }
 
-      const name = document.getElementById("signup-name").value.trim();
-      const email = document.getElementById("signup-email").value.trim();
-      const pass = document.getElementById("signup-password").value;
-      const confirm = document.getElementById("signup-confirm").value;
+    function startSlider() {
+      sliderInterval = setInterval(nextSlide, 5000);
+    }
 
-      if (!name) {
-        showStatus("নাম লিখুন", "error");
-        return;
-      }
-      if (pass !== confirm) {
-        showStatus("পাসওয়ার্ড মিলছে না", "error");
-        return;
-      }
-      if (pass.length < 6) {
-        showStatus("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে", "error");
-        return;
-      }
+    function stopSlider() {
+      if (sliderInterval) clearInterval(sliderInterval);
+    }
 
-      const res = await withTwoSecondDelay(async () => {
-        const cred = await auth.createUserWithEmailAndPassword(email, pass);
-        if (cred.user) {
-          await cred.user.updateProfile({ displayName: name });
-        }
-        return cred;
-      }, "একাউন্ট তৈরি হচ্ছে...");
-
-      if (res.ok) {
-        showStatus("একাউন্ট তৈরি হয়েছে, এখন Dashboard এ নিয়ে যাওয়া হচ্ছে...", "success");
-        setTimeout(() => {
-          window.location.href = REDIRECT_URL;
-        }, 500);
-      } else {
-        showStatus(res.error.message, "error");
-      }
+    dots.forEach(dot => {
+      dot.addEventListener("click", () => {
+        const index = parseInt(dot.getAttribute("data-index"), 10);
+        stopSlider();
+        showSlide(index);
+        startSlider();
+      });
     });
 
-    // Login
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      clearStatus();
-
-      const email = document.getElementById("login-email").value.trim();
-      const pass = document.getElementById("login-password").value;
-
-      if (!email || !pass) {
-        showStatus("ইমেইল ও পাসওয়ার্ড দিন", "error");
-        return;
-      }
-
-      const res = await withTwoSecondDelay(async () => {
-        const cred = await auth.signInWithEmailAndPassword(email, pass);
-        return cred;
-      }, "লগইন হচ্ছে...");
-
-      if (res.ok) {
-        showStatus("সফলভাবে লগইন হয়েছে, Dashboard এ নিয়ে যাওয়া হচ্ছে...", "success");
-        setTimeout(() => {
-          window.location.href = REDIRECT_URL;
-        }, 500);
-      } else {
-        showStatus(res.error.message, "error");
-      }
-    });
-
-    // Auto login (ইউজার আগে থেকেই লগইন থাকলে)
-    let authStateHandled = false;
-    auth.onAuthStateChanged((user) => {
-      if (authStateHandled) return; // শুধু প্রথমবারের জন্য
-      authStateHandled = true;
-
-      if (user) {
-        // আগের সেশন থেকে লগইন আছে → ডাইরেক্ট Dashboard
-        showLoader("Auto logging in...");
-        setTimeout(() => {
-          window.location.href = REDIRECT_URL;
-        }, 1500);
-      } else {
-        // লগইন নেই → normal UI
-        hideLoader();
-      }
-    });
+    // Start slider
+    showSlide(0);
+    startSlider();
   </script>
 </body>
-          </html>
+</html>
