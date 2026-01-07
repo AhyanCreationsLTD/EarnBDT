@@ -115,10 +115,19 @@
       box-shadow: 0 0 0 1px rgba(34,197,94,0.7);
     }
 
-    .helper {
+    .helper-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       font-size: 0.75rem;
       color: #94a3b8;
       margin-bottom: 6px;
+    }
+
+    .forgot-link {
+      color: #38bdf8;
+      cursor: pointer;
+      text-decoration: underline;
     }
 
     .btn-primary {
@@ -153,6 +162,18 @@
       transform: none;
     }
 
+    .bottom-text {
+      margin-top: 8px;
+      font-size: 0.76rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    .bottom-text a {
+      color: #38bdf8;
+      text-decoration: underline;
+    }
+
     .status {
       margin-top: 10px;
       font-size: 0.78rem;
@@ -175,7 +196,7 @@
       color: #166534;
     }
 
-    /* ছোট লোডার */
+    /* Loader */
     .loader {
       display: none;
       align-items: center;
@@ -205,23 +226,24 @@
     <div class="inner">
       <div class="brand">
         <div class="brand-title">EarnBDT</div>
-        <div class="brand-sub">Login</div>
+        <div class="brand-sub">Secure Login with Firebase</div>
       </div>
 
       <div class="title">Login</div>
-      <div class="subtitle">আপনার ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করুন।</div>
+      <div class="subtitle">শুধুমাত্র Gmail দিয়ে লগইন করতে পারবেন।</div>
 
       <form id="login-form">
         <div class="field">
-          <label for="login-email">ইমেইল</label>
-          <input type="email" id="login-email" placeholder="you@example.com" required>
+          <label for="login-email">Gmail</label>
+          <input type="email" id="login-email" placeholder="you@gmail.com" required>
         </div>
         <div class="field">
           <label for="login-password">পাসওয়ার্ড</label>
           <input type="password" id="login-password" placeholder="••••••••" minlength="6" required>
         </div>
-        <div class="helper">
-          Firebase Email/Password Login • পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।
+        <div class="helper-row">
+          <span>Firebase Email/Password Login</span>
+          <span class="forgot-link" id="forgot-link">Forgot / Reset Password?</span>
         </div>
         <button type="submit" class="btn-primary" id="login-btn">Login</button>
       </form>
@@ -232,6 +254,10 @@
       </div>
 
       <div class="status" id="status"></div>
+
+      <div class="bottom-text">
+        একাউন্ট নাই? <a href="signup.html">Signup করুন</a>
+      </div>
     </div>
   </div>
 
@@ -255,19 +281,20 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // রিডাইরেক্ট URL সেটিং
     const DASHBOARD_URL = "dashboard.html";
     const ADMIN_URL = "admin.html";
     const SIGNUP_URL = "signup.html";
 
-    // ফিক্সড Admin credential
     const ADMIN_EMAIL = "ahyanarfinofficial@gmail.com";
     const ADMIN_PASSWORD = "9173205@KP";
+
+    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
 
     const loginForm = document.getElementById("login-form");
     const loginBtn = document.getElementById("login-btn");
     const statusBox = document.getElementById("status");
     const loader = document.getElementById("loader");
+    const forgotLink = document.getElementById("forgot-link");
 
     function showStatus(message, type = "error") {
       statusBox.innerHTML = `<span class="${type}">${message}</span>`;
@@ -277,8 +304,9 @@
       statusBox.innerHTML = "";
     }
 
-    function showLoader() {
+    function showLoader(text) {
       loader.style.display = "flex";
+      loader.querySelector("div:nth-child(2)").textContent = text || "Processing...";
       loginBtn.classList.add("disabled");
       loginBtn.disabled = true;
     }
@@ -289,23 +317,22 @@
       loginBtn.disabled = false;
     }
 
-    // আগে থেকেই লগইন করা থাকলে অটো রিডাইরেক্ট
+    // আগে থেকেই লগইন থাকলে অটো রিডাইরেক্ট
     let authHandled = false;
     auth.onAuthStateChanged((user) => {
       if (authHandled) return;
       authHandled = true;
 
       if (user) {
-        showLoader();
+        showLoader("Auto logging in...");
         const email = (user.email || "").toLowerCase();
-
         setTimeout(() => {
           if (email === ADMIN_EMAIL.toLowerCase()) {
             window.location.href = ADMIN_URL;
           } else {
             window.location.href = DASHBOARD_URL;
           }
-        }, 1200);
+        }, 1000);
       } else {
         hideLoader();
       }
@@ -320,30 +347,31 @@
       const pass = document.getElementById("login-password").value;
 
       if (!email || !pass) {
-        showStatus("ইমেইল ও পাসওয়ার্ড দিন", "error");
+        showStatus("Gmail এবং পাসওয়ার্ড দিন", "error");
         return;
       }
 
-      showLoader();
+      if (!gmailRegex.test(email)) {
+        showStatus("শুধুমাত্র gmail.com ঠিকানা ব্যবহার করতে পারবেন", "error");
+        return;
+      }
+
+      showLoader("লগইন হচ্ছে...");
 
       const start = Date.now();
       try {
         await auth.signInWithEmailAndPassword(email, pass);
-
-        // Firebase login সফল হলে
         const elapsed = Date.now() - start;
         const wait = Math.max(2000 - elapsed, 0);
 
         setTimeout(() => {
           const lowerEmail = email.toLowerCase();
-          // ১) যদি Admin credential মিলে → admin.html
           if (lowerEmail === ADMIN_EMAIL.toLowerCase() && pass === ADMIN_PASSWORD) {
             showStatus("Admin হিসেবে লগইন হয়েছে, Admin Panel এ নিয়ে যাওয়া হচ্ছে...", "success");
             setTimeout(() => {
               window.location.href = ADMIN_URL;
             }, 600);
           } else {
-            // ২) নরমাল ইউজার হলে → dashboard.html
             showStatus("সফলভাবে লগইন হয়েছে, Dashboard এ নিয়ে যাওয়া হচ্ছে...", "success");
             setTimeout(() => {
               window.location.href = DASHBOARD_URL;
@@ -351,19 +379,41 @@
           }
         }, wait);
       } catch (err) {
-        // Login ব্যর্থ হলে → ২ সেকেন্ড পর signup.html এ পাঠাবো
         const elapsed = Date.now() - start;
         const wait = Math.max(2000 - elapsed, 0);
 
         setTimeout(() => {
           hideLoader();
-          showStatus("তথ্য মেলেনি, Signup পেইজে নিয়ে যাওয়া হচ্ছে...", "error");
+          showStatus("তথ্য মেলেনি, নতুন একাউন্ট তৈরি করতে Signup পেইজে যান।", "error");
           setTimeout(() => {
             window.location.href = SIGNUP_URL;
-          }, 800);
+          }, 1500);
         }, wait);
+      }
+    });
+
+    // Forgot / Reset Password
+    forgotLink.addEventListener("click", async () => {
+      clearStatus();
+      const email = document.getElementById("login-email").value.trim();
+      if (!email) {
+        showStatus("প্রথমে আপনার Gmail লিখুন", "error");
+        return;
+      }
+      if (!gmailRegex.test(email)) {
+        showStatus("শুধুমাত্র gmail.com ঠিকানা সমর্থিত", "error");
+        return;
+      }
+      showLoader("Reset ইমেইল পাঠানো হচ্ছে...");
+      try {
+        await auth.sendPasswordResetEmail(email);
+        hideLoader();
+        showStatus("Reset password ইমেইল পাঠানো হয়েছে। ইনবক্স চেক করুন।", "success");
+      } catch (err) {
+        hideLoader();
+        showStatus(err.message, "error");
       }
     });
   </script>
 </body>
-                                                                                   </html>
+</html>
