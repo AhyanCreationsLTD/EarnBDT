@@ -1,419 +1,55 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>EarnBDT - Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "Poppins", sans-serif;
-    }
-
-    body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at top, #1d4ed8, #020617 55%);
-      padding: 16px;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 380px;
-      background: rgba(15, 23, 42, 0.98);
-      color: #e5e7eb;
-      border-radius: 18px;
-      padding: 22px 20px 24px;
-      box-shadow: 0 20px 55px rgba(15, 23, 42, 0.9);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card::before {
-      content: "";
-      position: absolute;
-      width: 220px;
-      height: 220px;
-      background: radial-gradient(circle, rgba(56,189,248,0.6), transparent 70%);
-      top: -60px;
-      right: -40px;
-      opacity: 0.65;
-    }
-
-    .inner {
-      position: relative;
-      z-index: 1;
-    }
-
-    .brand {
-      text-align: center;
-      margin-bottom: 18px;
-    }
-
-    .brand-title {
-      font-size: 1.45rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .brand-sub {
-      font-size: 0.8rem;
-      color: #9ca3af;
-      margin-top: 2px;
-    }
-
-    .title {
-      font-size: 1.05rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .subtitle {
-      font-size: 0.8rem;
-      color: #9ca3af;
-      margin-bottom: 14px;
-    }
-
-    .field {
-      margin-bottom: 11px;
-    }
-
-    .field label {
-      display: block;
-      font-size: 0.78rem;
-      margin-bottom: 4px;
-      color: #cbd5f5;
-    }
-
-    .field input {
-      width: 100%;
-      padding: 9px 11px;
-      border-radius: 10px;
-      border: 1px solid #334155;
-      outline: none;
-      font-size: 0.9rem;
-      background: #020617;
-      color: #e5e7eb;
-      transition: all 0.2s ease;
-    }
-
-    .field input::placeholder {
-      color: #64748b;
-    }
-
-    .field input:focus {
-      border-color: #22c55e;
-      box-shadow: 0 0 0 1px rgba(34,197,94,0.7);
-    }
-
-    .helper-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.75rem;
-      color: #94a3b8;
-      margin-bottom: 6px;
-    }
-
-    .forgot-link {
-      color: #38bdf8;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
-    .btn-primary {
-      width: 100%;
-      border: none;
-      border-radius: 999px;
-      padding: 9px 0;
-      font-size: 0.95rem;
-      font-weight: 600;
-      background: linear-gradient(135deg, #22c55e, #22c1f1);
-      color: #020617;
-      cursor: pointer;
-      margin-top: 4px;
-      box-shadow: 0 12px 28px rgba(34,197,94,0.8);
-      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 34px rgba(34,197,94,0.9);
-    }
-
-    .btn-primary:active {
-      transform: translateY(0);
-      box-shadow: 0 10px 22px rgba(15,23,42,0.9);
-    }
-
-    .btn-primary.disabled {
-      opacity: 0.7;
-      cursor: default;
-      box-shadow: none;
-      transform: none;
-    }
-
-    .bottom-text {
-      margin-top: 8px;
-      font-size: 0.76rem;
-      color: #9ca3af;
-      text-align: center;
-    }
-
-    .bottom-text a {
-      color: #38bdf8;
-      text-decoration: underline;
-    }
-
-    .status {
-      margin-top: 10px;
-      font-size: 0.78rem;
-      min-height: 20px;
-    }
-
-    .status span {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 999px;
-    }
-
-    .status .error {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
-
-    .status .success {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    /* Loader */
-    .loader {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      margin-top: 8px;
-      font-size: 0.78rem;
-      color: #cbd5f5;
-      gap: 8px;
-    }
-
-    .spinner {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      border: 2px solid rgba(148,163,184,0.6);
-      border-top-color: #22c55e;
-      animation: spin 0.6s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
-  <div class="card">
-    <div class="inner">
-      <div class="brand">
-        <div class="brand-title">EarnBDT</div>
-        <div class="brand-sub">Secure Login with Firebase</div>
-      </div>
 
-      <div class="title">Login</div>
-      <div class="subtitle">শুধুমাত্র Gmail দিয়ে লগইন করতে পারবেন।</div>
+<h2>Login - EarnBDT</h2>
 
-      <form id="login-form">
-        <div class="field">
-          <label for="login-email">Gmail</label>
-          <input type="email" id="login-email" placeholder="you@gmail.com" required>
-        </div>
-        <div class="field">
-          <label for="login-password">পাসওয়ার্ড</label>
-          <input type="password" id="login-password" placeholder="••••••••" minlength="6" required>
-        </div>
-        <div class="helper-row">
-          <span>Firebase Email/Password Login</span>
-          <span class="forgot-link" id="forgot-link">Forgot / Reset Password?</span>
-        </div>
-        <button type="submit" class="btn-primary" id="login-btn">Login</button>
-      </form>
+<input type="email" id="email" placeholder="Email"><br><br>
+<input type="password" id="password" placeholder="Password"><br><br>
+<button onclick="login()">Login</button>
 
-      <div class="loader" id="loader">
-        <div class="spinner"></div>
-        <div>Logging in...</div>
-      </div>
+<script>
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAk-1oYIaRLmvUvVtMJd1AjzqUswxqvn7M",
+    authDomain: "earnbdt-acl-app.firebaseapp.com",
+    databaseURL: "https://earnbdt-acl-app-default-rtdb.firebaseio.com",
+    projectId: "earnbdt-acl-app",
+    storageBucket: "earnbdt-acl-app.firebasestorage.app",
+    messagingSenderId: "494434588404",
+    appId: "1:494434588404:web:ec6af909ffa64c80f1f0a1",
+    measurementId: "G-GXMV451BLC"
+  };
 
-      <div class="status" id="status"></div>
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
 
-      <div class="bottom-text">
-        একাউন্ট নাই? <a href="signup.html">Signup করুন</a>
-      </div>
-    </div>
-  </div>
+  function login() {
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
 
-  <!-- Firebase SDK (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-
-  <script>
-    // তোমার Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAk-1oYIaRLmvUvVtMJd1AjzqUswxqvn7M",
-      authDomain: "earnbdt-acl-app.firebaseapp.com",
-      databaseURL: "https://earnbdt-acl-app-default-rtdb.firebaseio.com",
-      projectId: "earnbdt-acl-app",
-      storageBucket: "earnbdt-acl-app.firebasestorage.app",
-      messagingSenderId: "494434588404",
-      appId: "1:494434588404:web:ec6af909ffa64c80f1f0a1",
-      measurementId: "G-GXMV451BLC"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
-    const DASHBOARD_URL = "dashboard.html";
-    const ADMIN_URL = "admin.html";
-    const SIGNUP_URL = "signup.html";
-
-    const ADMIN_EMAIL = "ahyanarfinofficial@gmail.com";
-    const ADMIN_PASSWORD = "9173205@KP";
-
-    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-
-    const loginForm = document.getElementById("login-form");
-    const loginBtn = document.getElementById("login-btn");
-    const statusBox = document.getElementById("status");
-    const loader = document.getElementById("loader");
-    const forgotLink = document.getElementById("forgot-link");
-
-    function showStatus(message, type = "error") {
-      statusBox.innerHTML = `<span class="${type}">${message}</span>`;
+    if(email === "" || password === ""){
+      alert("Email এবং Password দিন");
+      return;
     }
 
-    function clearStatus() {
-      statusBox.innerHTML = "";
-    }
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        alert("Login Successful!");
+        window.location.href = "home.html"; // Dashboard/Home page
+      })
+      .catch((error) => {
+        alert("ভুল Email বা Password");
+      });
+  }
+</script>
 
-    function showLoader(text) {
-      loader.style.display = "flex";
-      loader.querySelector("div:nth-child(2)").textContent = text || "Processing...";
-      loginBtn.classList.add("disabled");
-      loginBtn.disabled = true;
-    }
-
-    function hideLoader() {
-      loader.style.display = "none";
-      loginBtn.classList.remove("disabled");
-      loginBtn.disabled = false;
-    }
-
-    // আগে থেকেই লগইন থাকলে অটো রিডাইরেক্ট
-    let authHandled = false;
-    auth.onAuthStateChanged((user) => {
-      if (authHandled) return;
-      authHandled = true;
-
-      if (user) {
-        showLoader("Auto logging in...");
-        const email = (user.email || "").toLowerCase();
-        setTimeout(() => {
-          if (email === ADMIN_EMAIL.toLowerCase()) {
-            window.location.href = ADMIN_URL;
-          } else {
-            window.location.href = DASHBOARD_URL;
-          }
-        }, 1000);
-      } else {
-        hideLoader();
-      }
-    });
-
-    // Login submit
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      clearStatus();
-
-      const email = document.getElementById("login-email").value.trim();
-      const pass = document.getElementById("login-password").value;
-
-      if (!email || !pass) {
-        showStatus("Gmail এবং পাসওয়ার্ড দিন", "error");
-        return;
-      }
-
-      if (!gmailRegex.test(email)) {
-        showStatus("শুধুমাত্র gmail.com ঠিকানা ব্যবহার করতে পারবেন", "error");
-        return;
-      }
-
-      showLoader("লগইন হচ্ছে...");
-
-      const start = Date.now();
-      try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        const elapsed = Date.now() - start;
-        const wait = Math.max(2000 - elapsed, 0);
-
-        setTimeout(() => {
-          const lowerEmail = email.toLowerCase();
-          if (lowerEmail === ADMIN_EMAIL.toLowerCase() && pass === ADMIN_PASSWORD) {
-            showStatus("Admin হিসেবে লগইন হয়েছে, Admin Panel এ নিয়ে যাওয়া হচ্ছে...", "success");
-            setTimeout(() => {
-              window.location.href = ADMIN_URL;
-            }, 600);
-          } else {
-            showStatus("সফলভাবে লগইন হয়েছে, Dashboard এ নিয়ে যাওয়া হচ্ছে...", "success");
-            setTimeout(() => {
-              window.location.href = DASHBOARD_URL;
-            }, 600);
-          }
-        }, wait);
-      } catch (err) {
-        const elapsed = Date.now() - start;
-        const wait = Math.max(2000 - elapsed, 0);
-
-        setTimeout(() => {
-          hideLoader();
-          showStatus("তথ্য মেলেনি, নতুন একাউন্ট তৈরি করতে Signup পেইজে যান।", "error");
-          setTimeout(() => {
-            window.location.href = SIGNUP_URL;
-          }, 1500);
-        }, wait);
-      }
-    });
-
-    // Forgot / Reset Password
-    forgotLink.addEventListener("click", async () => {
-      clearStatus();
-      const email = document.getElementById("login-email").value.trim();
-      if (!email) {
-        showStatus("প্রথমে আপনার Gmail লিখুন", "error");
-        return;
-      }
-      if (!gmailRegex.test(email)) {
-        showStatus("শুধুমাত্র gmail.com ঠিকানা সমর্থিত", "error");
-        return;
-      }
-      showLoader("Reset ইমেইল পাঠানো হচ্ছে...");
-      try {
-        await auth.sendPasswordResetEmail(email);
-        hideLoader();
-        showStatus("Reset password ইমেইল পাঠানো হয়েছে। ইনবক্স চেক করুন।", "success");
-      } catch (err) {
-        hideLoader();
-        showStatus(err.message, "error");
-      }
-    });
-  </script>
 </body>
 </html>
