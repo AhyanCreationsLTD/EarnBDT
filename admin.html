@@ -2,28 +2,48 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EarnBDT | Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#f4f4f4;padding:20px;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Roboto',sans-serif;}
+body{background:#f0f2f5;padding:20px;}
 h2{text-align:center;margin-bottom:20px;}
-.card{background:#fff;padding:15px;margin-bottom:15px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.2);}
-.card h3{margin:0;color:#333;}
-.card p{margin:5px 0;color:#555;}
-.card button{padding:8px 12px;margin-right:10px;border:none;border-radius:8px;color:#fff;cursor:pointer;}
-.approve{background:green;}
-.reject{background:red;}
-.paid{background:#667eea;}
+.table{width:100%;max-width:1000px;margin:auto;border-collapse:collapse;}
+.table th, .table td{border:1px solid #ccc;padding:10px;text-align:center;}
+.table th{background:#667eea;color:#fff;}
+.button{padding:8px 12px;border:none;border-radius:8px;color:#fff;cursor:pointer;}
+.approve{background:#28a745;}
+.reject{background:#dc3545;}
+.paid{background:#17a2b8;}
+.button:hover{opacity:0.9;}
 </style>
 </head>
 <body>
 
 <h2>Admin Panel - Withdraw Requests</h2>
-<div id="requestsContainer"></div>
+<table class="table" id="requestTable">
+<thead>
+<tr>
+<th>Username</th>
+<th>Email</th>
+<th>Method</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+<!-- Requests will populate here -->
+</tbody>
+</table>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, get, update, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, get, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+/* Firebase Config */
 const firebaseConfig = {
   apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
   authDomain: "earnbdtapp.firebaseapp.com",
@@ -37,65 +57,75 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-async function loadRequests(){
-  const reqRef = ref(db,"withdrawals");
-  const snap = await get(reqRef);
-  const container = document.getElementById("requestsContainer");
-  container.innerHTML="";
-  if(snap.exists()){
-    const allReq = snap.val();
-    Object.entries(allReq).forEach(([key,req])=>{
-      const div = document.createElement("div");
-      div.className="card";
-      div.innerHTML=`<h3>${req.username} - ${req.amount} BDT (${req.method})</h3>
-                     <p>Email: ${req.email}</p>
-                     <p>Number: ${req.number}</p>
-                     <p>Status: ${req.status}</p>`;
+/* Load Withdraw Requests */
+const requestRef = ref(db,"withdraw_requests");
+const tbody = document.getElementById("requestTable").querySelector("tbody");
 
-      if(req.status==="Pending"){
-        const approveBtn = document.createElement("button");
-        approveBtn.className="approve";
-        approveBtn.textContent="Approve";
-        approveBtn.onclick=async ()=>{
-          await update(ref(db,"withdrawals/"+key),{status:"Approved"});
-          loadRequests();
-        };
+onValue(requestRef, snapshot=>{
+  tbody.innerHTML="";
+  snapshot.forEach(child=>{
+    const key = child.key;
+    const data = child.val();
 
-        const rejectBtn = document.createElement("button");
-        rejectBtn.className="reject";
-        rejectBtn.textContent="Reject";
-        rejectBtn.onclick=async ()=>{
-          await update(ref(db,"withdrawals/"+key),{status:"Rejected"});
-          // Restore user balance
-          const balRef = ref(db,"users/"+req.uid+"/balance");
-          const balSnap = await get(balRef);
-          let currentBalance = balSnap.val()||0;
-          await update(balRef,{balance: currentBalance + req.amount});
-          loadRequests();
-        };
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${data.username}</td>
+      <td>${data.email}</td>
+      <td>${data.paymentMethod}</td>
+      <td>${data.amount}</td>
+      <td id="status-${key}">${data.status}</td>
+      <td id="actions-${key}"></td>
+    `;
+    tbody.appendChild(tr);
 
-        const paidBtn = document.createElement("button");
-        paidBtn.className="paid";
-        paidBtn.textContent="Paid";
-        paidBtn.onclick=async ()=>{
-          await update(ref(db,"withdrawals/"+key),{status:"Paid"});
-          loadRequests();
-        };
+    const actionsTd = document.getElementById(`actions-${key}`);
+    
+    if(data.status==="Pending"){
+      const approveBtn = document.createElement("button");
+      approveBtn.innerText="Approve";
+      approveBtn.className="button approve";
+      approveBtn.onclick = async ()=>{
+        await update(ref(db,"withdraw_requests/"+key),{status:"Approved"});
+        alert("Request Approved! User balance deducted.");
+      };
+      
+      const rejectBtn = document.createElement("button");
+      rejectBtn.innerText="Reject";
+      rejectBtn.className="button reject";
+      rejectBtn.style.marginLeft="5px";
+      rejectBtn.onclick = async ()=>{
+        // Restore balance
+        const userBalRef = ref(db,"users/"+data.uid+"/balance");
+        const snapBal = await get(userBalRef);
+        let currentBal = 0;
+        if(snapBal.exists()){
+          const b = snapBal.val();
+          if(typeof b==="number") currentBal=b;
+          else if(typeof b==="object" && b.amount!==undefined) currentBal=b.amount;
+        }
+        await set(userBalRef, currentBal + parseInt(data.amount));
 
-        div.appendChild(approveBtn);
-        div.appendChild(rejectBtn);
-        div.appendChild(paidBtn);
-      }
+        await update(ref(db,"withdraw_requests/"+key),{status:"Rejected"});
+        alert("Request Rejected! Balance restored.");
+      };
 
-      container.appendChild(div);
-    });
-  }else{
-    container.innerHTML="<p>No Withdraw Requests Found</p>";
-  }
-}
+      actionsTd.appendChild(approveBtn);
+      actionsTd.appendChild(rejectBtn);
+    }
 
-loadRequests();
+    if(data.status==="Approved"){
+      // Show Paid button
+      const paidBtn = document.createElement("button");
+      paidBtn.innerText="Paid";
+      paidBtn.className="button paid";
+      paidBtn.onclick = async ()=>{
+        await update(ref(db,"withdraw_requests/"+key),{status:"Paid"});
+        alert("User marked as Paid!");
+      };
+      actionsTd.appendChild(paidBtn);
+    }
+  });
+});
 </script>
-
 </body>
 </html>
