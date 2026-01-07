@@ -1,729 +1,251 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>EarnBDT - Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>EarnBDT | Dashboard</title>
 
-  <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{
+  margin:0;
+  font-family: Arial,sans-serif;
+  background: linear-gradient(135deg,#43cea2,#185a9d);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "Poppins", sans-serif;
-    }
+.header{
+  width:90%;
+  max-width:500px;
+  background:#fff;
+  margin-top:20px;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,.2);
+  text-align:center;
+}
 
-    body {
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #1f2937, #020617 55%);
-      color: #e5e7eb;
-      display: flex;
-      justify-content: center;
-      padding: 18px 10px;
-    }
+.header h2{
+  margin:5px 0;
+  color:#333;
+}
+.header p{
+  margin:5px 0;
+  color:#555;
+}
 
-    .shell {
-      width: 100%;
-      max-width: 1160px;
-      background: rgba(15, 23, 42, 0.97);
-      border-radius: 22px;
-      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.9);
-      overflow: hidden;
-      position: relative;
-    }
+.header button{
+  padding:8px 16px;
+  border:none;
+  border-radius:8px;
+  background:#ff5e62;
+  color:#fff;
+  cursor:pointer;
+  margin-top:10px;
+}
 
-    .shell::before {
-      content: "";
-      position: absolute;
-      width: 280px;
-      height: 280px;
-      background: radial-gradient(circle, rgba(59,130,246,0.4), transparent 70%);
-      top: -80px;
-      left: -60px;
-      opacity: 0.9;
-      pointer-events: none;
-    }
+.card{
+  width:90%;
+  max-width:500px;
+  background:#fff;
+  margin:15px 0;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,.2);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    .shell::after {
-      content: "";
-      position: absolute;
-      width: 260px;
-      height: 260px;
-      background: radial-gradient(circle, rgba(34,197,94,0.5), transparent 70%);
-      bottom: -90px;
-      right: -60px;
-      opacity: 0.85;
-      pointer-events: none;
-    }
+.card h3{
+  margin:0;
+  color:#333;
+}
+.card button{
+  padding:8px 16px;
+  border:none;
+  border-radius:8px;
+  background:#667eea;
+  color:#fff;
+  cursor:pointer;
+}
 
-    .content {
-      position: relative;
-      z-index: 1;
-      padding: 16px 18px 18px;
-    }
+.grid{
+  width:90%;
+  max-width:500px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+  margin-top:10px;
+}
 
-    @media (max-width: 768px) {
-      .content {
-        padding: 14px 10px 16px;
-      }
-    }
+.grid button{
+  padding:20px;
+  border:none;
+  border-radius:12px;
+  background:#fff;
+  color:#333;
+  font-size:16px;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(0,0,0,.2);
+}
 
-    /* Top Bar */
-    .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .brand-box {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-logo {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #22c55e, #22c1f1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      color: #020617;
-      font-size: 1.1rem;
-      box-shadow: 0 12px 28px rgba(34, 197, 94, 0.8);
-    }
-
-    .brand-text h1 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-
-    .brand-text span {
-      font-size: 0.77rem;
-      color: #9ca3af;
-    }
-
-    .user-box {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: rgba(15, 23, 42, 0.8);
-      border-radius: 999px;
-      padding: 5px 8px 5px 6px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-    }
-
-    .user-avatar {
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #f97316, #ec4899);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: #020617;
-      font-size: 0.95rem;
-    }
-
-    .user-info {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .user-name {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #e5e7eb;
-    }
-
-    .user-email {
-      font-size: 0.7rem;
-      color: #9ca3af;
-    }
-
-    .logout-btn {
-      border: none;
-      background: rgba(248, 113, 113, 0.1);
-      color: #fecaca;
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 0.7rem;
-      cursor: pointer;
-      margin-left: 4px;
-      transition: background 0.15s ease, transform 0.1s ease;
-    }
-
-    .logout-btn:hover {
-      background: rgba(248, 113, 113, 0.2);
-      transform: translateY(-1px);
-    }
-
-    /* Layout grid */
-    .main-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.9fr) minmax(0, 1.3fr);
-      gap: 12px;
-    }
-
-    @media (max-width: 900px) {
-      .main-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Balance cards */
-    .cards-row {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    @media (max-width: 700px) {
-      .cards-row {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 480px) {
-      .cards-row {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .card {
-      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.7));
-      border-radius: 16px;
-      padding: 10px 11px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.8);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-label {
-      font-size: 0.78rem;
-      color: #9ca3af;
-      margin-bottom: 2px;
-    }
-
-    .card-value {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #f9fafb;
-    }
-
-    .card-pill {
-      margin-top: 5px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 0.7rem;
-      background: rgba(249, 250, 251, 0.06);
-      color: #c4b5fd;
-      border: 1px solid rgba(129, 140, 248, 0.6);
-    }
-
-    .card-icon-circle {
-      position: absolute;
-      width: 44px;
-      height: 44px;
-      border-radius: 999px;
-      background: radial-gradient(circle, rgba(34,197,94,0.9), transparent 60%);
-      right: -4px;
-      top: -10px;
-      opacity: 0.5;
-    }
-
-    .card-icon-circle.blue {
-      background: radial-gradient(circle, rgba(59,130,246,0.9), transparent 60%);
-    }
-
-    .card-icon-circle.orange {
-      background: radial-gradient(circle, rgba(249,115,22,0.9), transparent 60%);
-    }
-
-    /* Actions grid */
-    .actions-card {
-      margin-bottom: 12px;
-      background: rgba(15, 23, 42, 0.88);
-      border-radius: 18px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.9);
-      padding: 11px 11px 10px;
-    }
-
-    .section-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-
-    .section-sub {
-      font-size: 0.78rem;
-      color: #9ca3af;
-      margin-bottom: 10px;
-    }
-
-    .actions-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 9px;
-    }
-
-    @media (max-width: 820px) {
-      .actions-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 480px) {
-      .actions-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    .action-item {
-      border-radius: 14px;
-      padding: 9px 9px 8px;
-      background: radial-gradient(circle at top left, rgba(31,41,55,0.9), rgba(15,23,42,0.9));
-      border: 1px solid rgba(148,163,184,0.6);
-      cursor: pointer;
-      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 80px;
-    }
-
-    .action-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(59,130,246,0.7);
-      border-color: rgba(96,165,250,0.9);
-    }
-
-    .action-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-
-    .action-sub {
-      font-size: 0.72rem;
-      color: #9ca3af;
-    }
-
-    .action-footer {
-      margin-top: 6px;
-      font-size: 0.72rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: #a5b4fc;
-    }
-
-    .badge {
-      font-size: 0.7rem;
-      padding: 2px 7px;
-      border-radius: 999px;
-    }
-
-    .badge.green {
-      background: rgba(16,185,129,0.12);
-      color: #6ee7b7;
-      border: 1px solid rgba(45,212,191,0.6);
-    }
-
-    .badge.blue {
-      background: rgba(59,130,246,0.12);
-      color: #bfdbfe;
-      border: 1px solid rgba(59,130,246,0.7);
-    }
-
-    .badge.purple {
-      background: rgba(168,85,247,0.12);
-      color: #f5d0fe;
-      border: 1px solid rgba(168,85,247,0.6);
-    }
-
-    .badge.orange {
-      background: rgba(249,115,22,0.12);
-      color: #fed7aa;
-      border: 1px solid rgba(249,115,22,0.7);
-    }
-
-    /* Right column (activity / summary) */
-    .side-card {
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 18px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.9);
-      padding: 11px 11px 10px;
-      margin-bottom: 10px;
-    }
-
-    .activity-list {
-      margin-top: 6px;
-      display: grid;
-      gap: 6px;
-      font-size: 0.78rem;
-    }
-
-    .activity-item {
-      padding: 7px 8px;
-      border-radius: 12px;
-      background: rgba(15,23,42,0.95);
-      border: 1px solid rgba(55,65,81,0.9);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .activity-main {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-
-    .activity-title {
-      font-size: 0.8rem;
-      font-weight: 500;
-    }
-
-    .activity-sub {
-      font-size: 0.68rem;
-      color: #9ca3af;
-    }
-
-    .activity-amount {
-      font-size: 0.82rem;
-      font-weight: 600;
-    }
-
-    .amount-green {
-      color: #6ee7b7;
-    }
-
-    .amount-red {
-      color: #fecaca;
-    }
-
-    .amount-blue {
-      color: #93c5fd;
-    }
-
-    .note-box {
-      margin-top: 8px;
-      font-size: 0.74rem;
-      padding: 7px 8px;
-      border-radius: 12px;
-      background: rgba(15,23,42,0.95);
-      border: 1px dashed rgba(148,163,184,0.7);
-      color: #9ca3af;
-    }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: rgba(59,130,246,0.15);
-      color: #bfdbfe;
-      font-size: 0.7rem;
-      border: 1px solid rgba(59,130,246,0.6);
-      margin-top: 4px;
-    }
-
-    .chip-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #22c55e;
-      margin-right: 4px;
-    }
-
-    /* Simple toast */
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      background: rgba(15,23,42,0.95);
-      padding: 7px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.8);
-      font-size: 0.78rem;
-      display: none;
-      z-index: 50;
-      box-shadow: 0 8px 20px rgba(15,23,42,0.9);
-    }
-  </style>
+.footer{
+  margin:30px 0 10px 0;
+  color:#fff;
+  font-weight:bold;
+}
+</style>
 </head>
 <body>
-  <div class="shell">
-    <div class="content">
-      <!-- Top bar -->
-      <div class="top-bar">
-        <div class="brand-box">
-          <div class="brand-logo">BD</div>
-          <div class="brand-text">
-            <h1>EarnBDT</h1>
-            <span>Rewards • Tasks • Withdraw</span>
-          </div>
-        </div>
-        <div class="user-box">
-          <div class="user-avatar" id="user-avatar-letter">U</div>
-          <div class="user-info">
-            <div class="user-name" id="user-name">User</div>
-            <div class="user-email" id="user-email">user@example.com</div>
-          </div>
-          <button class="logout-btn" id="logout-btn">Logout</button>
-        </div>
-      </div>
 
-      <div class="main-grid">
-        <!-- Left column -->
-        <div>
-          <!-- Balance cards -->
-          <div class="cards-row">
-            <div class="card">
-              <div class="card-label">Main Balance</div>
-              <div class="card-value" id="card-balance">৳ 0</div>
-              <div class="card-pill">
-                <span>Wallet</span>
-              </div>
-              <div class="card-icon-circle green"></div>
-            </div>
-            <div class="card">
-              <div class="card-label">Today Earned</div>
-              <div class="card-value" id="card-today-earned">৳ 0</div>
-              <div class="card-pill">
-                <span>Today</span>
-              </div>
-              <div class="card-icon-circle blue"></div>
-            </div>
-            <div class="card">
-              <div class="card-label">Total Withdrawn</div>
-              <div class="card-value" id="card-withdrawn">৳ 0</div>
-              <div class="card-pill">
-                <span>Lifetime</span>
-              </div>
-              <div class="card-icon-circle orange"></div>
-            </div>
-          </div>
+<div class="header">
+  <h2 id="username">Username</h2>
+  <p id="email">user@example.com</p>
+  <button onclick="logout()">Logout</button>
+</div>
 
-          <!-- Actions: Watch Ads, Daily Rewards, etc. -->
-          <div class="actions-card">
-            <div class="section-title">Quick Actions</div>
-            <div class="section-sub">আপনি এখান থেকে আপনার আয়ের সব মূল কাজগুলো করতে পারবেন।</div>
+<div class="card">
+  <h3>Balance: <span id="balance">0</span> BDT</h3>
+  <button onclick="withdraw()">Withdraw</button>
+</div>
 
-            <div class="actions-grid">
-              <div class="action-item" data-action="watch-ads">
-                <div>
-                  <div class="action-title">Watch Ads</div>
-                  <div class="action-sub">Rewarded Ads দেখে ইনকাম শুরু করুন।</div>
-                </div>
-                <div class="action-footer">
-                  <span class="badge green">Per Ads Reward</span>
-                  <span>▶</span>
-                </div>
-              </div>
+<div class="grid">
+  <button onclick="watchAds()">Watch Ads</button>
+  <button onclick="dailyReward()">Daily Reward</button>
+  <button onclick="taskComplete()">Daily Tasks</button>
+  <button onclick="window.location.href='ref.html'">Refer & Earn</button>
+  <button onclick="window.location.href='history.html'">My History</button>
+</div>
 
-              <div class="action-item" data-action="daily-reward">
-                <div>
-                  <div class="action-title">Daily Rewards</div>
-                  <div class="action-sub">প্রতিদিন ফ্রি বোনাস ক্লেইম করুন।</div>
-                </div>
-                <div class="action-footer">
-                  <span class="badge.blue badge">Streak</span>
-                  <span>★</span>
-                </div>
-              </div>
+<div class="footer">@EarnBDT - Ahyan Creations LTD</div>
 
-              <div class="action-item" data-action="daily-task">
-                <div>
-                  <div class="action-title">Daily Tasks</div>
-                  <div class="action-sub">App install, survey ইত্যাদি Task করুন।</div>
-                </div>
-                <div class="action-footer">
-                  <span class="badge purple">High Reward</span>
-                  <span>☑</span>
-                </div>
-              </div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getDatabase, ref, get, set, update, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-              <div class="action-item" data-action="refer">
-                <div>
-                  <div class="action-title">Refer & Earn</div>
-                  <div class="action-sub">বন্ধুকে ইনভাইট করে বোনাস পান।</div>
-                </div>
-                <div class="action-footer">
-                  <span class="badge orange">+Bonus</span>
-                  <span>∞</span>
-                </div>
-              </div>
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
+  authDomain: "earnbdtapp.firebaseapp.com",
+  databaseURL: "https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "earnbdtapp",
+  storageBucket: "earnbdtapp.firebasestorage.app",
+  messagingSenderId: "407276444050",
+  appId: "1:407276444050:web:b6ff2e075202716b5e094b"
+};
 
-              <div class="action-item" data-action="withdraw">
-                <div>
-                  <div class="action-title">Withdraw</div>
-                  <div class="action-sub">bKash / Nagad এ payout নিন।</div>
-                </div>
-                <div class="action-footer">
-                  <span class="badge green">Payout</span>
-                  <span>৳</span>
-                </div>
-              </div>
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-              <div class="action-item" data-action="withdraw-history">
-                <div>
-                  <div class="action-title">Withdraw History</div>
-                  <div class="action-sub">আপনার সব payout এর হিসাব।</div>
-                </div>
-                <div class="action-footer">
-                  <span class="badge blue">History</span>
-                  <span>📜</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+/* Load User Info */
+onAuthStateChanged(auth, user => {
+  if(user){
+    const uid = user.uid;
+    const userRef = ref(db,"users/"+uid);
+    get(userRef).then(snapshot=>{
+      if(snapshot.exists()){
+        const data = snapshot.val();
+        document.getElementById("username").innerText = data.username || "User";
+        document.getElementById("email").innerText = data.email || user.email;
+        document.getElementById("balance").innerText = data.balance || 0;
+      }
+    });
+  }else{
+    window.location.href = "login.html";
+  }
+});
 
-        <!-- Right column -->
-        <div>
-          <!-- Recent Activity -->
-          <div class="side-card">
-            <div class="section-title">Recent Activity</div>
-            <div class="section-sub">আপনার অ্যাকাউন্টের সাম্প্রতিক কিছু লেনদেন (ডেমো ডেটা)</div>
+/* Logout */
+window.logout = function(){
+  signOut(auth).then(()=>{
+    window.location.href = "login.html";
+  });
+}
 
-            <div class="activity-list" id="activity-list">
-              <!-- Filled by JS -->
-            </div>
+/* Update Balance on Page */
+async function updateBalance(uid, amount){
+  const balRef = ref(db,"users/"+uid+"/balance");
+  const snap = await get(balRef);
+  let currentBalance = snap.val() || 0;
+  currentBalance += amount;
+  await set(balRef,currentBalance);
+  document.getElementById("balance").innerText = currentBalance;
+  return currentBalance;
+}
 
-            <div class="note-box">
-              <div>নোট: আসল EarnBDT অ্যাপে এখানে Firebase Database থেকে আপনার বাস্তব লেনদেনগুলো দেখানো হবে।</div>
-              <div class="chip">
-                <span class="chip-dot"></span>
-                Secure by Firebase
-              </div>
-            </div>
-          </div>
+/* Watch Ads → +10 points */
+window.watchAds = async function(){
+  const user = auth.currentUser;
+  if(!user) return alert("Login required");
+  await updateBalance(user.uid,10);
+  alert("আপনি 10 পয়েন্ট অর্জন করেছেন Watch Ads দেখার জন্য!");
+}
 
-          <!-- Summary / Info -->
-          <div class="side-card">
-            <div class="section-title">Account Summary</div>
-            <div class="section-sub">
-              আপনার EarnBDT একাউন্ট এখন শুধু Demo মোডে আছে। Backend যুক্ত হলে এখান থেকে
-              Balance, Withdraw status ইত্যাদি রিয়েল টাইম আপডেট হবে।
-            </div>
-            <div class="note-box">
-              • Watch Ads → AdMob Rewarded Ads<br>
-              • Daily Task → Firebase দ্বারা কনফিগারেবল Task লিস্ট<br>
-              • Withdraw → Admin Panel এর approval সাপোর্ট করবে<br><br>
-              আপাতত UI ডিজাইন দেখে নিন, পরে আমরা কোডের মাধ্যমে সব ফাংশনালিটি জুড়ে দিতে পারব।
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+/* Daily Reward → +2 points once per day */
+window.dailyReward = async function(){
+  const user = auth.currentUser;
+  if(!user) return alert("Login required");
+  const uid = user.uid;
+  const today = new Date().toLocaleDateString();
+  const rewardRef = ref(db,"users/"+uid+"/dailyRewardDate");
+  const snap = await get(rewardRef);
+  if(snap.exists() && snap.val() === today){
+    alert("আপনি আজ ইতিমধ্যেই Daily Reward নিয়েছেন।");
+  }else{
+    await updateBalance(uid,2);
+    await set(rewardRef,today);
+    alert("Daily Reward 2 পয়েন্ট যোগ হয়েছে!");
+  }
+}
 
-    <!-- Simple Toast -->
-    <div class="toast" id="toast"></div>
-  </div>
+/* Daily Task → +5 points per task */
+window.taskComplete = async function(){
+  const user = auth.currentUser;
+  if(!user) return alert("Login required");
+  const uid = user.uid;
+  await updateBalance(uid,5);
+  alert("Task Complete! 5 পয়েন্ট যোগ হয়েছে।");
+  window.location.href="task.html"; // Redirect to task page
+}
 
-  <!-- Firebase SDK (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+/* Withdraw → only if balance >=1050 */
+window.withdraw = async function(){
+  const user = auth.currentUser;
+  if(!user) return alert("Login required");
+  const uid = user.uid;
+  const balRef = ref(db,"users/"+uid+"/balance");
+  const snap = await get(balRef);
+  const balance = snap.val() || 0;
+  if(balance < 1050){
+    alert("Withdraw এর জন্য আপনার ব্যালেন্স কমপক্ষে 1050 পয়েন্ট হতে হবে!");
+    return;
+  }
+  window.location.href="withdraw.html";
+}
 
-  <script>
-    // একই Firebase config (index.html এ যা ছিল)
-    const firebaseConfig = {
-      apiKey: "AIzaSyAk-1oYIaRLmvUvVtMJd1AjzqUswxqvn7M",
-      authDomain: "earnbdt-acl-app.firebaseapp.com",
-      databaseURL: "https://earnbdt-acl-app-default-rtdb.firebaseio.com",
-      projectId: "earnbdt-acl-app",
-      storageBucket: "earnbdt-acl-app.firebasestorage.app",
-      messagingSenderId: "494434588404",
-      appId: "1:494434588404:web:ec6af909ffa64c80f1f0a1",
-      measurementId: "G-GXMV451BLC"
-    };
+/* Withdraw approval/reject handled by admin */
+async function adminApproveWithdraw(uid, amount){
+  const balRef = ref(db,"users/"+uid+"/balance");
+  const snap = await get(balRef);
+  let currentBalance = snap.val() || 0;
+  if(currentBalance >= amount){
+    currentBalance -= amount;
+    await set(balRef,currentBalance);
+  }
+}
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+async function adminRejectWithdraw(uid, amount){
+  const balRef = ref(db,"users/"+uid+"/balance");
+  const snap = await get(balRef);
+  let currentBalance = snap.val() || 0;
+  currentBalance += amount;
+  await set(balRef,currentBalance);
+}
+</script>
 
-    const userNameEl = document.getElementById("user-name");
-    const userEmailEl = document.getElementById("user-email");
-    const userAvatarLetter = document.getElementById("user-avatar-letter");
-    const logoutBtn = document.getElementById("logout-btn");
-    const toastEl = document.getElementById("toast");
-
-    const cardBalance = document.getElementById("card-balance");
-    const cardTodayEarned = document.getElementById("card-today-earned");
-    const cardWithdrawn = document.getElementById("card-withdrawn");
-    const activityList = document.getElementById("activity-list");
-
-    function showToast(msg) {
-      toastEl.textContent = msg;
-      toastEl.style.display = "block";
-      setTimeout(() => {
-        toastEl.style.display = "none";
-      }, 2000);
-    }
-
-    // ডেমো ডেটা (পরে Firebase DB থেকে আনতে পারবে)
-    function loadDemoStats() {
-      cardBalance.textContent = "৳ 120";
-      cardTodayEarned.textContent = "৳ 15";
-      cardWithdrawn.textContent = "৳ 40";
-
-      const demoActivities = [
-        { title: "Ad Reward", sub: "Watch Ads", amount: "+৳ 5", cls: "amount-green" },
-        { title: "Task Complete", sub: "Daily Task #3", amount: "+৳ 10", cls: "amount-blue" },
-        { title: "Withdraw", sub: "bKash - Pending", amount: "-৳ 40", cls: "amount-red" },
-      ];
-
-      activityList.innerHTML = "";
-      demoActivities.forEach((a) => {
-        const div = document.createElement("div");
-        div.className = "activity-item";
-        div.innerHTML = `
-          <div class="activity-main">
-            <div class="activity-title">${a.title}</div>
-            <div class="activity-sub">${a.sub}</div>
-          </div>
-          <div class="activity-amount ${a.cls}">${a.amount}</div>
-        `;
-        activityList.appendChild(div);
-      });
-    }
-
-    // Quick action ক্লিক
-    document.querySelectorAll(".action-item").forEach((item) => {
-      item.addEventListener("click", () => {
-        const action = item.getAttribute("data-action");
-        switch (action) {
-          case "watch-ads":
-            showToast("Watch Ads স্ক্রিন পরে যুক্ত হবে।");
-            break;
-          case "daily-reward":
-            showToast("Daily Rewards ফিচার পরে যুক্ত হবে।");
-            break;
-          case "daily-task":
-            showToast("Daily Tasks ফিচার পরে যুক্ত হবে।");
-            break;
-          case "refer":
-            showToast("Refer & Earn লিঙ্ক পরে যুক্ত হবে।");
-            break;
-          case "withdraw":
-            showToast("Wi
+</body>
+</html>
