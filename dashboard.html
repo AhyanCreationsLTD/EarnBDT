@@ -260,11 +260,13 @@ window.withdraw = async function(){
   window.location.href="withdraw.html";
 }
 
-/* WhatsApp */
+// Floating WhatsApp
 document.getElementById("whatsappBtn").addEventListener("click", ()=>{
   const phone = "+8801604444716";
   const msg = encodeURIComponent(`Assalamualaikum Admin, My email: ${currentUserEmail}, I have a problem and that is....`);
-  window.open(`https://wa.me/${phone}?text=${msg}`,"_blank");
+  
+  // Mobile & Web safe link
+  window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
 });
 </script>
 </body>
