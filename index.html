@@ -264,7 +264,7 @@
     <div class="auth-inner">
       <div class="brand">
         <div class="brand-title">EarnBDT</div>
-        <div class="brand-sub">Secure Login & Signup with Firebase</div>
+        <div class="brand-sub">Secure Login & Signup with</div>
       </div>
 
       <div class="tab-switch">
@@ -286,7 +286,7 @@
           <input type="password" id="login-password" placeholder="••••••••" minlength="6" required>
         </div>
         <div class="helper">
-          Firebase Email/Password Login • পাসওয়ার্ড কমপক্ষে ৬ অক্ষর।
+          Email/Password Login • পাসওয়ার্ড কমপক্ষে ৬ অক্ষর।
         </div>
         <button type="submit" class="primary-btn" id="login-btn">Login</button>
       </form>
@@ -336,7 +336,7 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    const REDIRECT_URL = "dashboard.html"; // সফল Login/Signup এর পরে যেই পেইজে যাবে
+    const REDIRECT_URL = "pages/dashboard.html"; // সফল Login/Signup এর পরে যেই পেইজে যাবে
 
     // DOM refs
     const tabLogin = document.getElementById("tab-login");
