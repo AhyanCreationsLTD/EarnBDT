@@ -153,6 +153,18 @@
       transform: none;
     }
 
+    .bottom-text {
+      margin-top: 8px;
+      font-size: 0.76rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    .bottom-text a {
+      color: #38bdf8;
+      text-decoration: underline;
+    }
+
     .status {
       margin-top: 10px;
       font-size: 0.78rem;
@@ -175,7 +187,7 @@
       color: #166534;
     }
 
-    /* ছোট লোডার */
+    /* Loader */
     .loader {
       display: none;
       align-items: center;
@@ -209,7 +221,7 @@
       </div>
 
       <div class="title">Signup</div>
-      <div class="subtitle">নতুন একাউন্ট তৈরি করে Dashboard এ যান।</div>
+      <div class="subtitle">শুধুমাত্র Gmail দিয়ে নতুন একাউন্ট তৈরি করতে পারবেন।</div>
 
       <form id="signup-form">
         <div class="field">
@@ -217,8 +229,8 @@
           <input type="text" id="signup-name" placeholder="আপনার নাম" required>
         </div>
         <div class="field">
-          <label for="signup-email">ইমেইল</label>
-          <input type="email" id="signup-email" placeholder="you@example.com" required>
+          <label for="signup-email">Gmail</label>
+          <input type="email" id="signup-email" placeholder="you@gmail.com" required>
         </div>
         <div class="field">
           <label for="signup-password">পাসওয়ার্ড</label>
@@ -229,7 +241,8 @@
           <input type="password" id="signup-confirm" placeholder="আবার পাসওয়ার্ড লিখুন" minlength="6" required>
         </div>
         <div class="helper">
-          একবার একাউন্ট তৈরি হলে স্বয়ংক্রিয়ভাবে Dashboard এ নিয়ে যাবে।
+          প্রতি IP থেকে শুধুমাত্র একটি একাউন্ট তৈরি করা যাবে।  
+          একাউন্ট তৈরি হলে স্বয়ংক্রিয়ভাবে Dashboard এ যাবে।
         </div>
         <button type="submit" class="btn-primary" id="signup-btn">Create Account</button>
       </form>
@@ -240,6 +253,10 @@
       </div>
 
       <div class="status" id="status"></div>
+
+      <div class="bottom-text">
+        ইতিমধ্যে একাউন্ট আছে? <a href="login.html">Login করুন</a>
+      </div>
     </div>
   </div>
 
@@ -268,12 +285,15 @@
     const DASHBOARD_URL = "dashboard.html";
     const ADMIN_URL = "admin.html";
 
-    const ADMIN_EMAIL = "ahyanarfinofficial@gmail.com"; // auto-redirect এর জন্য
+    const ADMIN_EMAIL = "ahyanarfinofficial@gmail.com"; // auto redirect এর জন্য
+    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
 
     const signupForm = document.getElementById("signup-form");
     const signupBtn = document.getElementById("signup-btn");
     const statusBox = document.getElementById("status");
     const loader = document.getElementById("loader");
+
+    let clientIp = null;
 
     function showStatus(message, type = "error") {
       statusBox.innerHTML = `<span class="${type}">${message}</span>`;
@@ -283,8 +303,9 @@
       statusBox.innerHTML = "";
     }
 
-    function showLoader() {
+    function showLoader(text) {
       loader.style.display = "flex";
+      loader.querySelector("div:nth-child(2)").textContent = text || "Processing...";
       signupBtn.classList.add("disabled");
       signupBtn.disabled = true;
     }
@@ -302,7 +323,7 @@
       authHandled = true;
 
       if (user) {
-        showLoader();
+        showLoader("Auto redirect...");
         const email = (user.email || "").toLowerCase();
         setTimeout(() => {
           if (email === ADMIN_EMAIL.toLowerCase()) {
@@ -315,6 +336,19 @@
         hideLoader();
       }
     });
+
+    // ক্লায়েন্ট IP নেওয়া (একটা IP থেকে একাউন্ট লিমিট করার জন্য)
+    // নোট: এটা ১০০% নিরাপদ না, তবে বেসিক লেভেলে এক IP = এক একাউন্ট enforce করতে সাহায্য করে।
+    fetch("https://api.ipify.org?format=json")
+      .then(res => res.json())
+      .then(data => {
+        clientIp = data.ip;
+        console.log("Client IP:", clientIp);
+      })
+      .catch(err => {
+        console.error("IP fetch error:", err);
+        clientIp = null;
+      });
 
     // Signup submit
     signupForm.addEventListener("submit", async (e) => {
@@ -330,6 +364,10 @@
         showStatus("নাম লিখুন", "error");
         return;
       }
+      if (!gmailRegex.test(email)) {
+        showStatus("শুধুমাত্র gmail.com ঠিকানা দিয়ে একাউন্ট তৈরি করতে পারবেন", "error");
+        return;
+      }
       if (pass !== confirm) {
         showStatus("পাসওয়ার্ড মিলছে না", "error");
         return;
@@ -338,20 +376,34 @@
         showStatus("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে", "error");
         return;
       }
+      if (!clientIp) {
+        showStatus("আপনার IP শনাক্ত করা যায়নি। নেট কানেকশন চেক করে আবার চেষ্টা করুন।", "error");
+        return;
+      }
 
-      showLoader();
-      const start = Date.now();
+      showLoader("একাউন্ট যাচাই হচ্ছে...");
 
       try {
+        // ১) আগে চেক করো এই IP থেকে আগে একাউন্ট আছে কি না
+        const ipSnap = await db.ref("ipSignups/" + clientIp).once("value");
+        if (ipSnap.exists()) {
+          hideLoader();
+          showStatus("এই IP থেকে ইতিমধ্যেই একটি একাউন্ট তৈরি করা হয়েছে। অন্য IP থেকে চেষ্টা করুন।", "error");
+          return;
+        }
+
+        // ২) Auth এ একাউন্ট তৈরি
+        const start = Date.now();
         const cred = await auth.createUserWithEmailAndPassword(email, pass);
 
-        // ১) displayName আপডেট
         if (cred.user) {
+          // displayName আপডেট
           await cred.user.updateProfile({ displayName: name });
 
-          // ২) Realtime Database এ user প্রোফাইল সেভ
           const uid = cred.user.uid;
           const now = Date.now();
+
+          // ৩) users/{uid} এ প্রোফাইল সেভ
           await db.ref("users/" + uid).set({
             name: name,
             email: email,
@@ -359,6 +411,13 @@
             isPremium: false,
             createdAt: now,
             updatedAt: now
+          });
+
+          // ৪) ipSignups/{ip} এ রেকর্ড সেভ → এক IP = এক একাউন্ট
+          await db.ref("ipSignups/" + clientIp).set({
+            uid: uid,
+            email: email,
+            createdAt: now
           });
         }
 
@@ -372,14 +431,11 @@
           }, 700);
         }, wait);
       } catch (err) {
-        const elapsed = Date.now() - start;
-        const wait = Math.max(2000 - elapsed, 0);
-        setTimeout(() => {
-          hideLoader();
-          showStatus(err.message, "error");
-        }, wait);
+        console.error("Signup error:", err);
+        hideLoader();
+        showStatus(err.message, "error");
       }
     });
   </script>
 </body>
-  </html>
+</html>
