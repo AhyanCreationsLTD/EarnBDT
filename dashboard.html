@@ -172,8 +172,17 @@ onAuthStateChanged(auth, user => {
         const data = snapshot.val();
         document.getElementById("username").innerText = data.username || "User";
         document.getElementById("email").innerText = data.email || user.email;
-        document.getElementById("balance").innerText = data.balance || 0;
         currentUserEmail = data.email || user.email;
+
+        // ✅ Fix object balance
+        let bal = data.balance;
+        let displayBalance = 0;
+        if(typeof bal === "object" && bal !== null && bal.amount !== undefined){
+          displayBalance = bal.amount;
+        }else{
+          displayBalance = bal || 0;
+        }
+        document.getElementById("balance").innerText = displayBalance;
       }
     });
   }else{
@@ -190,9 +199,21 @@ window.logout = function(){
 async function updateBalance(uid, amount){
   const balRef = ref(db,"users/"+uid+"/balance");
   const snap = await get(balRef);
-  let currentBalance = snap.val() || 0;
+  let currentBalance = 0;
+
+  if(snap.exists()){
+    const balData = snap.val();
+    if(typeof balData === "object" && balData.amount !== undefined){
+      currentBalance = balData.amount;
+    } else if(typeof balData === "number"){
+      currentBalance = balData;
+    }
+  }
+
   currentBalance += amount;
-  await set(balRef,currentBalance);
+
+  // Save only as number
+  await set(balRef, currentBalance);
   document.getElementById("balance").innerText = currentBalance;
   return currentBalance;
 }
@@ -233,7 +254,15 @@ window.withdraw = async function(){
   if(!user) return;
   const uid = user.uid;
   const snap = await get(ref(db,"users/"+uid+"/balance"));
-  const balance = snap.val() || 0;
+  let balance = 0;
+  if(snap.exists()){
+    const balData = snap.val();
+    if(typeof balData === "object" && balData.amount !== undefined){
+      balance = balData.amount;
+    } else if(typeof balData === "number"){
+      balance = balData;
+    }
+  }
   if(balance < 1050){
     alert("Withdraw এর জন্য আপনার ব্যালেন্স কমপক্ষে 1050 পয়েন্ট হতে হবে!");
     return;
