@@ -284,8 +284,8 @@
 
     const DASHBOARD_URL = "dashboard.html";
     const ADMIN_URL = "admin.html";
+    const ADMIN_EMAIL = "ahyanarfinofficial@gmail.com";
 
-    const ADMIN_EMAIL = "ahyanarfinofficial@gmail.com"; // auto redirect এর জন্য
     const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
 
     const signupForm = document.getElementById("signup-form");
@@ -294,6 +294,7 @@
     const loader = document.getElementById("loader");
 
     let clientIp = null;
+    let ipKey = null; // Firebase path-এর জন্য safe IP
 
     function showStatus(message, type = "error") {
       statusBox.innerHTML = `<span class="${type}">${message}</span>`;
@@ -337,17 +338,18 @@
       }
     });
 
-    // ক্লায়েন্ট IP নেওয়া (একটা IP থেকে একাউন্ট লিমিট করার জন্য)
-    // নোট: এটা ১০০% নিরাপদ না, তবে বেসিক লেভেলে এক IP = এক একাউন্ট enforce করতে সাহায্য করে।
+    // ক্লায়েন্ট IP নেওয়া ও safe key বানানো
     fetch("https://api.ipify.org?format=json")
       .then(res => res.json())
       .then(data => {
-        clientIp = data.ip;
-        console.log("Client IP:", clientIp);
+        clientIp = data.ip;                // যেমন "118.179.120.113"
+        ipKey = clientIp.replace(/\./g, "_"); // "118_179_120_113"
+        console.log("Client IP:", clientIp, "Key:", ipKey);
       })
       .catch(err => {
         console.error("IP fetch error:", err);
         clientIp = null;
+        ipKey = null;
       });
 
     // Signup submit
@@ -376,7 +378,7 @@
         showStatus("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে", "error");
         return;
       }
-      if (!clientIp) {
+      if (!clientIp || !ipKey) {
         showStatus("আপনার IP শনাক্ত করা যায়নি। নেট কানেকশন চেক করে আবার চেষ্টা করুন।", "error");
         return;
       }
@@ -385,7 +387,7 @@
 
       try {
         // ১) আগে চেক করো এই IP থেকে আগে একাউন্ট আছে কি না
-        const ipSnap = await db.ref("ipSignups/" + clientIp).once("value");
+        const ipSnap = await db.ref("ipSignups/" + ipKey).once("value");
         if (ipSnap.exists()) {
           hideLoader();
           showStatus("এই IP থেকে ইতিমধ্যেই একটি একাউন্ট তৈরি করা হয়েছে। অন্য IP থেকে চেষ্টা করুন।", "error");
@@ -397,13 +399,12 @@
         const cred = await auth.createUserWithEmailAndPassword(email, pass);
 
         if (cred.user) {
-          // displayName আপডেট
           await cred.user.updateProfile({ displayName: name });
 
           const uid = cred.user.uid;
           const now = Date.now();
 
-          // ৩) users/{uid} এ প্রোফাইল সেভ
+          // users/{uid} এ প্রোফাইল সেভ
           await db.ref("users/" + uid).set({
             name: name,
             email: email,
@@ -413,8 +414,8 @@
             updatedAt: now
           });
 
-          // ৪) ipSignups/{ip} এ রেকর্ড সেভ → এক IP = এক একাউন্ট
-          await db.ref("ipSignups/" + clientIp).set({
+          // ipSignups/{ipKey} এ রেকর্ড সেভ (এক IP = এক একাউন্ট)
+          await db.ref("ipSignups/" + ipKey).set({
             uid: uid,
             email: email,
             createdAt: now
