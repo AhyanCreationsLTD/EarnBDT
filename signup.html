@@ -1,68 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>EarnBDT - Register</title>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<meta charset="UTF-8">
+<title>EarnBDT | Signup</title>
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#43cea2,#185a9d);
+  font-family:Arial,sans-serif;
+}
+.box{
+  background:#fff;
+  padding:30px;
+  width:320px;
+  border-radius:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
+  text-align:center;
+}
+.box h2{
+  margin-bottom:20px;
+}
+.box input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+.box button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#43cea2;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+.box p{
+  margin-top:15px;
+}
+.box a{
+  color:#43cea2;
+  text-decoration:none;
+}
+</style>
 </head>
+
 <body>
 
-<h2>Register - EarnBDT</h2>
+<div class="box">
+  <h2>Signup</h2>
+  <input type="text" id="username" placeholder="Username">
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="signup()">Create Account</button>
+  <p>Already have account? <a href="login.html">Login</a></p>
+</div>
 
-<input type="text" id="username" placeholder="Username"><br><br>
-<input type="email" id="email" placeholder="Email"><br><br>
-<input type="password" id="password" placeholder="Password"><br><br>
-<button onclick="register()">Register</button>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-<script>
-  // Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyAk-1oYIaRLmvUvVtMJd1AjzqUswxqvn7M",
-    authDomain: "earnbdt-acl-app.firebaseapp.com",
-    databaseURL: "https://earnbdt-acl-app-default-rtdb.firebaseio.com",
-    projectId: "earnbdt-acl-app",
-    storageBucket: "earnbdt-acl-app.firebasestorage.app",
-    messagingSenderId: "494434588404",
-    appId: "1:494434588404:web:ec6af909ffa64c80f1f0a1",
-    measurementId: "G-GXMV451BLC"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
+  authDomain: "earnbdtapp.firebaseapp.com",
+  databaseURL: "https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "earnbdtapp",
+  storageBucket: "earnbdtapp.firebasestorage.app",
+  messagingSenderId: "407276444050",
+  appId: "1:407276444050:web:b6ff2e075202716b5e094b"
+};
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-  function register() {
-    var username = document.getElementById("username").value;
-    var email = document.getElementById("email").value;
-    var password = document.getElementById("password").value;
+window.signup = function(){
+  const username = document.getElementById("username").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-    if(username === "" || email === "" || password === ""){
-      alert("সব ফিল্ড পূরণ করুন");
-      return;
-    }
-
-    firebase.auth().createUserWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        var user = userCredential.user;
-
-        // Save user data in Realtime Database
-        firebase.database().ref("users/" + user.uid).set({
-          uid: user.uid,
-          username: username,
-          email: email,
-          balance: 0,
-          points: 0,
-          createdAt: new Date().toISOString()
-        });
-
-        alert("Registration Successful!");
-        window.location.href = "login.html";
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
-  }
+  createUserWithEmailAndPassword(auth,email,password)
+  .then(userCred=>{
+    set(ref(db,"users/"+userCred.user.uid),{
+      username: username,
+      email: email,
+      balance: 0,
+      createdAt: Date.now()
+    });
+    alert("Account Created Successfully");
+    window.location.href="login.html";
+  })
+  .catch(err=>{
+    alert(err.message);
+  });
+}
 </script>
 
 </body>
