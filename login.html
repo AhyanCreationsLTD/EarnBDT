@@ -2,43 +2,135 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Login - EarnBDT</title>
+<title>EarnBDT - Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body,html{width:100%;height:100%;font-family:'Poppins',sans-serif;overflow-x:hidden;}
+
+/* Gradient Background Animation */
+body{
+  background: linear-gradient(135deg,#ff758c,#ff7eb3,#ffbcaa,#b0eaff,#87f0ff);
+  background-size: 1200% 1200%;
+  animation: gradientBG 25s ease infinite;
+}
+@keyframes gradientBG{
+  0%{background-position:0% 50%;}
+  25%{background-position:50% 50%;}
+  50%{background-position:100% 50%;}
+  75%{background-position:50% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+/* Floating Blobs */
+.blob{
+  position:absolute; border-radius:50%; opacity:0.6;
+  animation: floatBlob linear infinite;
+}
+@keyframes floatBlob{
+  0%{transform: translateY(100vh) scale(1);}
+  50%{transform: translateY(50vh) scale(1.2);}
+  100%{transform: translateY(-20vh) scale(1);}
+}
+
+/* Header */
+header{text-align:center;padding:40px 20px;color:#fff;text-shadow:2px 2px 10px rgba(0,0,0,0.3);}
+header h1{font-size:42px;margin-bottom:10px;}
+header p{font-size:16px;}
+
+/* Container & Form */
+.container{max-width:400px;margin:20px auto;padding:20px;position:relative;z-index:2;background:rgba(255,255,255,0.9);border-radius:25px;box-shadow:0 8px 25px rgba(0,0,0,0.2);}
+input{width:100%;padding:12px 15px;margin:12px 0;border-radius:15px;border:1px solid #ccc;font-size:16px;transition:0.3s;}
+input:focus{border-color:#ff758c;box-shadow:0 0 10px #ff758c;outline:none;}
+button{width:100%;padding:14px;margin:15px 0;border:none;border-radius:20px;font-size:16px;font-weight:600;cursor:pointer;background: linear-gradient(45deg,#ff758c,#ff7eb3,#ffbcaa);color:#fff;box-shadow:0 5px 15px rgba(0,0,0,0.2);transition:0.3s,transform 0.2s;}
+button:hover{transform:scale(1.05);box-shadow:0 8px 25px rgba(0,0,0,0.3);}
+
+/* Sequential animation for inputs/buttons */
+@keyframes fadeUp{from{opacity:0;transform:translateY(50px);}to{opacity:1;transform:translateY(0);}}
+input,button{opacity:0;animation:fadeUp 0.8s forwards;}
+input:nth-child(1){animation-delay:0.5s;}
+input:nth-child(2){animation-delay:1s;}
+button{animation-delay:1.5s;}
+
+/* Admin Panel small button */
+#adminBtn{width:40%;background:#00c6ff;margin:5px auto;display:block;font-size:14px;transition:0.3s;}
+#adminBtn:hover{background:#0077aa;transform:scale(1.05);}
+
+/* Footer */
+.footer{text-align:center;margin:15px;color:#fff;font-size:14px;text-shadow:0 0 10px rgba(0,0,0,0.3);}
+</style>
 </head>
 <body>
+
+<header>
+<h1>EarnBDT Login</h1>
+<p>Enter your credentials to continue</p>
+</header>
+
 <div class="container">
-<h2>Login</h2>
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
-<button id="loginBtn">Login</button>
-<button onclick="window.location.href='adminlogin.html'" style="background:#28a745;margin-top:10px;">Admin Panel</button>
-<p><a href="forget.html">Forgot Password?</a></p>
+<form id="loginForm">
+  <input type="email" id="email" placeholder="Email" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <button type="submit">Login</button>
+</form>
+<button id="adminBtn" onclick="window.location.href='adminlogin.html'">Admin Panel</button>
 </div>
 
-<div class="floating-whatsapp" onclick="openWhatsapp()">💬</div>
+<div class="footer">@EarnBDT - Ahyan Creations LTD</div>
 
 <script type="module">
-import { auth } from './firebaseConfig.js';
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
-document.getElementById("loginBtn").onclick = async ()=>{
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  try {
-    await signInWithEmailAndPassword(auth,email,password);
-    window.location.href="dashboard.html";
-  } catch(err){
-    alert(err.message);
-  }
-}
+const firebaseConfig = {
+  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
+  authDomain: "earnbdtapp.firebaseapp.com",
+  projectId: "earnbdtapp",
+  storageBucket: "earnbdtapp.firebasestorage.app",
+  messagingSenderId: "407276444050",
+  appId: "1:407276444050:web:b6ff2e075202716b5e094b",
+  databaseURL:"https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/"
+};
 
-// WhatsApp support
-function openWhatsapp(){
-  const email = document.getElementById("email").value || "";
-  const text = encodeURIComponent(`Assalamualaikum Admin, My email: ${email}, I have a problem and that is...`);
-  window.open(`https://wa.me/8801604444716?text=${text}`,'_blank');
-}
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getDatabase();
+
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  signInWithEmailAndPassword(auth,email,password)
+  .then((userCredential)=>{
+    const uid = userCredential.user.uid;
+    // Redirect to dashboard
+    window.location.href='dashboard.html';
+  })
+  .catch((error)=>{
+    alert('ভুল ইমেইল বা পাসওয়ার্ড!');
+  });
+});
 </script>
+
+<script>
+// Floating blobs
+function createBlobs(count){
+    const colors = ['#ff758c','#ff7eb3','#ffbcaa','#b0eaff','#87f0ff','#ffddaa'];
+    for(let i=0;i<count;i++){
+        let blob=document.createElement('div');
+        blob.className='blob';
+        blob.style.width=blob.style.height=(30+Math.random()*70)+'px';
+        blob.style.background=colors[Math.floor(Math.random()*colors.length)];
+        blob.style.left=Math.random()*100+'%';
+        blob.style.top=Math.random()*100+'%';
+        blob.style.animationDuration=(15+Math.random()*10)+'s';
+        document.body.appendChild(blob);
+    }
+}
+createBlobs(15);
+</script>
+
 </body>
 </html>
