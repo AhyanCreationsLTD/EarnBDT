@@ -2,73 +2,88 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>Withdraw - EarnBDT</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EarnBDT | Withdraw</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Roboto',sans-serif;}
-body{background:linear-gradient(135deg,#43cea2,#185a9d);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;}
 
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f4f6f9;
+}
+.header{
+  background:#0a7cff;
+  color:#fff;
+  padding:15px;
+  text-align:center;
+}
 .card{
-  width:100%;
-  max-width:500px;
   background:#fff;
-  padding:25px;
-  border-radius:15px;
-  box-shadow:0 8px 25px rgba(0,0,0,.2);
-  margin-top:20px;
-}
-.card h2{color:#333;margin-bottom:15px;text-align:center;}
-.card label{display:block;margin:10px 0 5px;color:#555;}
-.card input, .card select{
-  width:100%;
-  padding:10px;
+  margin:15px;
+  padding:15px;
   border-radius:10px;
-  border:1px solid #ccc;
-  margin-bottom:15px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
 }
-.card button{
+input, select{
   width:100%;
   padding:12px;
+  margin-top:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  font-size:16px;
+}
+button{
+  width:100%;
+  padding:14px;
+  margin-top:15px;
   border:none;
-  border-radius:10px;
-  background:#667eea;
+  border-radius:6px;
+  font-size:16px;
+  background:#28a745;
   color:#fff;
-  font-weight:bold;
   cursor:pointer;
 }
-.card button:hover{background:#5a67d8;}
+.note{
+  font-size:14px;
+  color:#777;
+  margin-top:10px;
+}
 </style>
 </head>
+
 <body>
 
-<div class="card">
-  <h2>Withdraw Money</h2>
-  <label>Username</label>
-  <input type="text" id="username" disabled>
-  
-  <label>Email</label>
-  <input type="email" id="email" disabled>
-  
-  <label>Payment Method</label>
-  <select id="paymentMethod">
-    <option value="bKash">bKash</option>
-    <option value="Nagad">Nagad</option>
-    <option value="Rocket">Rocket</option>
-  </select>
-  
-  <label>Amount (BDT)</label>
-  <input type="number" id="amount" placeholder="Enter amount">
-  
-  <button onclick="submitWithdraw()">Submit Withdraw Request</button>
+<div class="header">
+  <h2>Withdraw Request</h2>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getDatabase, ref, get, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+<div class="card">
+  <input type="text" id="username" placeholder="Username" disabled>
+  <input type="email" id="email" placeholder="Email" disabled>
 
-/* Firebase Config */
+  <select id="method">
+    <option value="">Select Payment Method</option>
+    <option>Bkash</option>
+    <option>Nagad</option>
+    <option>Rocket</option>
+  </select>
+
+  <input type="text" id="number" placeholder="Payment Number">
+  <input type="number" id="amount" placeholder="Withdraw Amount (BDT)">
+
+  <button onclick="submitWithdraw()">Submit Withdraw Request</button>
+
+  <div class="note">
+    ⚠ Minimum withdraw: 1050 points
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getDatabase, ref, get, push, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
   authDomain: "earnbdtapp.firebaseapp.com",
@@ -83,70 +98,69 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-let currentUID = "";
-let currentBalance = 0;
+let uid = "";
+let balance = 0;
 
-onAuthStateChanged(auth, user => {
-  if(!user) {
-    window.location.href = "login.html";
+onAuthStateChanged(auth, user=>{
+  if(!user){
+    location.href="login.html";
     return;
   }
-  currentUID = user.uid;
+  uid = user.uid;
+  document.getElementById("email").value = user.email;
 
-  // Load user info
-  get(ref(db,"users/"+currentUID)).then(snapshot=>{
-    if(snapshot.exists()){
-      const data = snapshot.val();
-      document.getElementById("username").value = data.username || "User";
-      document.getElementById("email").value = data.email || user.email;
-
-      // Balance safe check
-      let bal = data.balance;
-      if(typeof bal === "number") currentBalance = bal;
-      else if(typeof bal === "object" && bal.amount!==undefined) currentBalance = bal.amount;
-      else currentBalance = 0;
+  get(ref(db,"users/"+uid)).then(snap=>{
+    if(snap.exists()){
+      const d = snap.val();
+      document.getElementById("username").value = d.username || "User";
+      balance = Number(d.balance || 0);
     }
   });
 });
 
-async function submitWithdraw(){
-  const amount = parseInt(document.getElementById("amount").value);
-  const method = document.getElementById("paymentMethod").value;
+window.submitWithdraw = function(){
+  const method = document.getElementById("method").value;
+  const number = document.getElementById("number").value.trim();
+  const amount = Number(document.getElementById("amount").value);
 
-  if(!amount || amount <= 0){
-    alert("Please enter valid amount!");
-    return;
-  }
-
-  if(amount > currentBalance){
-    alert("আপনার ব্যালেন্স এতো নেই!");
+  if(!method || !number || !amount){
+    alert("সব ফিল্ড পূরণ করুন");
     return;
   }
 
   if(amount < 1050){
-    alert("Withdraw এর জন্য কমপক্ষে 1050 পয়েন্ট থাকতে হবে।");
+    alert("Minimum withdraw 1050 points");
     return;
   }
 
-  // Deduct balance immediately
-  const balanceRef = ref(db,"users/"+currentUID+"/balance");
-  await set(balanceRef, currentBalance - amount);
-  currentBalance -= amount;
+  if(amount > balance){
+    alert("পর্যাপ্ত ব্যালেন্স নেই");
+    return;
+  }
 
-  // Push withdraw request to DB
-  const withdrawRef = ref(db,"withdraw_requests");
-  await push(withdrawRef,{
-    uid: currentUID,
-    username: document.getElementById("username").value,
+  // balance কাটছি
+  const newBalance = balance - amount;
+
+  const requestData = {
+    uid: uid,
     email: document.getElementById("email").value,
-    paymentMethod: method,
+    username: document.getElementById("username").value,
+    method: method,
+    number: number,
     amount: amount,
-    status: "Pending",   // Admin will approve/reject
-    timestamp: new Date().toISOString()
-  });
+    status: "Pending",
+    time: Date.now()
+  };
 
-  alert("Withdraw request submitted successfully! Admin approval pending.");
-  window.location.href = "dashboard.html";
+  const newRef = push(ref(db,"withdraw_requests"));
+
+  update(ref(db), {
+    ["withdraw_requests/"+newRef.key]: requestData,
+    ["users/"+uid+"/balance"]: newBalance
+  }).then(()=>{
+    alert("Withdraw request submitted");
+    location.href="dashboard.html";
+  });
 }
 </script>
 
