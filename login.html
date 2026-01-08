@@ -2,91 +2,32 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>EarnBDT | Login</title>
-
+<title>Login - EarnBDT</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{
-  margin:0;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:linear-gradient(135deg,#667eea,#764ba2);
-  font-family:Arial,sans-serif;
-}
-.box{
-  background:#fff;
-  padding:30px;
-  width:320px;
-  border-radius:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,.2);
-  text-align:center;
-}
-.box h2{
-  margin-bottom:20px;
-  color:#333;
-}
-.box input{
-  width:100%;
-  padding:12px;
-  margin:10px 0;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-.box button{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  background:#667eea;
-  color:#fff;
-  font-size:16px;
-  cursor:pointer;
-  margin-top:10px;
-}
-.box p{
-  margin-top:10px;
-  font-size:14px;
-}
-.box a{
-  color:#667eea;
-  text-decoration:none;
-}
-.admin-btn{
-  margin-top:10px;
-  padding:6px 12px;
-  background:#ff5e62;
-  color:#fff;
-  border:none;
-  border-radius:8px;
-  font-size:14px;
-  cursor:pointer;
-}
+body{font-family:Arial;margin:0;background:#f4f6f9;}
+.container{max-width:400px;margin:50px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.1);}
+input{width:100%;padding:10px;margin:10px 0;border-radius:5px;border:1px solid #ccc;}
+button{width:100%;padding:10px;border:none;border-radius:5px;background:#0a7cff;color:#fff;font-size:16px;cursor:pointer;}
+small{display:block;text-align:right;margin-top:5px;color:#555;}
+.admin-btn{background:#28a745;margin-top:10px;font-size:14px;}
 </style>
 </head>
-
 <body>
-
-<div class="box">
-  <h2>Login</h2>
-
-  <input type="email" id="email" placeholder="Email" required>
-  <input type="password" id="password" placeholder="Password" required>
-
-  <button onclick="login()">Login</button>
-
-  <p><a href="forget.html">Forgot Password?</a></p>
-  <p>New user? <a href="signup.html">Create Account</a></p>
-
-  <!-- Admin Panel Button -->
-  <button class="admin-btn" onclick="window.location.href='adminlogin.html'">Admin Panel</button>
+<div class="container">
+<h2>Login</h2>
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<small><a href="forget.html">Forgot Password?</a></small>
+<button class="admin-btn" onclick="location.href='adminlogin.html'">Admin Panel</button>
+<p>Don't have an account? <a href="signup.html">Sign Up</a></p>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-/* Firebase Config */
 const firebaseConfig = {
   apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
   authDomain: "earnbdtapp.firebaseapp.com",
@@ -96,37 +37,16 @@ const firebaseConfig = {
   messagingSenderId: "407276444050",
   appId: "1:407276444050:web:b6ff2e075202716b5e094b"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-/* ✅ User Login Function */
-window.login = function(){
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  if(email === "" || password === ""){
-    alert("সব ঘর পূরণ করুন");
-    return;
-  }
-
-  signInWithEmailAndPassword(auth, email, password)
-  .then(() => {
-    alert("Login Successful");
-    window.location.href = "dashboard.html";
-  })
-  .catch(error => {
-    alert(error.message);
-  });
+window.login = ()=>{
+  const email=document.getElementById("email").value;
+  const password=document.getElementById("password").value;
+  signInWithEmailAndPassword(auth,email,password)
+  .then(()=>location.href="dashboard.html")
+  .catch(e=>alert("Invalid credentials"));
 }
-
-/* Already logged in check */
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    window.location.href = "dashboard.html";
-  }
-});
 </script>
-
 </body>
 </html>
