@@ -1,1 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EarnBDT - Daily Tasks</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body,html{margin:0;padding:0;width:100%;height:100%;font-family:'Poppins',sans-serif;
+background:linear-gradient(135deg,#ff758c,#ff7eb3,#ffbcaa,#87f0ff,#b0eaff);background-size:1200% 1200%;animation:gradientBG 25s ease infinite;}
+@keyframes gradientBG{0%{background-position:0% 50%;}25%{background-position:50% 50%;}50%{background-position:100% 50%;}75%{background-position:50% 50%;}100%{background-position:0% 50%;}}
 
+.container{max-width:500px;margin:40px auto;padding:20px;background:rgba(255,255,255,0.95);border-radius:25px;box-shadow:0 8px 25px rgba(0,0,0,0.2);}
+h2{text-align:center;color:#ff758c;margin-bottom:20px;text-shadow:0 0 8px #fff;}
+.task{display:flex;justify-content:space-between;align-items:center;margin:12px 0;padding:12px;border-radius:15px;background:#ff758c;color:#fff;cursor:pointer;transition:0.3s;font-weight:600;}
+.task:hover{transform:scale(1.03);box-shadow:0 6px 20px rgba(0,0,0,0.3);}
+.footer{text-align:center;margin:20px;color:#fff;font-size:14px;text-shadow:0 0 10px rgba(0,0,0,0.3);}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>Daily Tasks</h2>
+<div class="task" onclick="completeTask('task1',5)">✅ Complete Profile (+5 points)</div>
+<div class="task" onclick="completeTask('task2',5)">✅ Watch Tutorial Video (+5 points)</div>
+<div class="task" onclick="completeTask('task3',5)">✅ Share App on Social Media (+5 points)</div>
+<div class="task" onclick="completeTask('task4',5)">✅ Daily Check-in (+5 points)</div>
+</div>
+
+<div class="footer">@EarnBDT - Ahyan Creations LTD</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
+  authDomain: "earnbdtapp.firebaseapp.com",
+  projectId: "earnbdtapp",
+  storageBucket: "earnbdtapp.firebasestorage.app",
+  messagingSenderId: "407276444050",
+  appId: "1:407276444050:web:b6ff2e075202716b5e094b",
+  databaseURL:"https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getDatabase();
+
+let currentUserUid = '';
+let completedTasks = {};
+
+onAuthStateChanged(auth,user=>{
+  if(user){
+    currentUserUid = user.uid;
+    get(ref(db,'users/'+currentUserUid+'/completedTasks')).then(snap=>{
+      if(snap.exists()) completedTasks = snap.val();
+    });
+  }else{
+    window.location.href='login.html';
+  }
+});
+
+window.completeTask = function(taskId,points){
+  if(completedTasks[taskId]) {
+    alert('You already completed this task today!');
+    return;
+  }
+  completedTasks[taskId] = true;
+  // Add points
+  get(ref(db,'users/'+currentUserUid)).then(snap=>{
+    if(snap.exists()){
+      const user = snap.val();
+      const newPoints = (user.points||0)+points;
+      update(ref(db,'users/'+currentUserUid),{points:newPoints,completedTasks});
+      alert(`Task Completed! You earned ${points} points.`);
+    }
+  });
+}
+</script>
+</body>
+</html>
