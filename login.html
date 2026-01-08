@@ -4,48 +4,40 @@
 <meta charset="UTF-8">
 <title>Login - EarnBDT</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body{font-family:Arial;margin:0;background:#f4f6f9;}
-.container{max-width:400px;margin:50px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.1);}
-input{width:100%;padding:10px;margin:10px 0;border-radius:5px;border:1px solid #ccc;}
-button{width:100%;padding:10px;border:none;border-radius:5px;background:#0a7cff;color:#fff;font-size:16px;cursor:pointer;}
-small{display:block;text-align:right;margin-top:5px;color:#555;}
-.admin-btn{background:#28a745;margin-top:10px;font-size:14px;}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
 <h2>Login</h2>
 <input type="email" id="email" placeholder="Email">
 <input type="password" id="password" placeholder="Password">
-<button onclick="login()">Login</button>
-<small><a href="forget.html">Forgot Password?</a></small>
-<button class="admin-btn" onclick="location.href='adminlogin.html'">Admin Panel</button>
-<p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+<button id="loginBtn">Login</button>
+<button onclick="window.location.href='adminlogin.html'" style="background:#28a745;margin-top:10px;">Admin Panel</button>
+<p><a href="forget.html">Forgot Password?</a></p>
 </div>
 
+<div class="floating-whatsapp" onclick="openWhatsapp()">💬</div>
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { auth } from './firebaseConfig.js';
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
-  authDomain: "earnbdtapp.firebaseapp.com",
-  databaseURL: "https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  projectId: "earnbdtapp",
-  storageBucket: "earnbdtapp.firebasestorage.app",
-  messagingSenderId: "407276444050",
-  appId: "1:407276444050:web:b6ff2e075202716b5e094b"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+document.getElementById("loginBtn").onclick = async ()=>{
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  try {
+    await signInWithEmailAndPassword(auth,email,password);
+    window.location.href="dashboard.html";
+  } catch(err){
+    alert(err.message);
+  }
+}
 
-window.login = ()=>{
-  const email=document.getElementById("email").value;
-  const password=document.getElementById("password").value;
-  signInWithEmailAndPassword(auth,email,password)
-  .then(()=>location.href="dashboard.html")
-  .catch(e=>alert("Invalid credentials"));
+// WhatsApp support
+function openWhatsapp(){
+  const email = document.getElementById("email").value || "";
+  const text = encodeURIComponent(`Assalamualaikum Admin, My email: ${email}, I have a problem and that is...`);
+  window.open(`https://wa.me/8801604444716?text=${text}`,'_blank');
 }
 </script>
 </body>
