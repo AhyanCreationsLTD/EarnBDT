@@ -4,137 +4,47 @@
 <meta charset="UTF-8">
 <title>Refer & Earn - EarnBDT</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#f4f6f9;
-}
-.header{
-  background:#0a7cff;
-  color:#fff;
-  padding:15px;
-  text-align:center;
-}
-.card{
-  background:#fff;
-  margin:15px;
-  padding:15px;
-  border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
-}
-.ref-box{
-  font-size:18px;
-  font-weight:bold;
-  background:#f1f1f1;
-  padding:10px;
-  border-radius:8px;
-  text-align:center;
-  margin:10px 0;
-}
-.btn{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  background:#28a745;
-  color:#fff;
-  font-size:16px;
-  cursor:pointer;
-}
-.stats{
-  display:flex;
-  justify-content:space-between;
-  margin-top:10px;
-}
-.stats div{
-  width:48%;
-  background:#eef4ff;
-  padding:10px;
-  border-radius:8px;
-  text-align:center;
-}
+body{font-family:Arial;background:#f4f6f9;margin:0;}
+.container{max-width:400px;margin:50px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.1);}
+input{width:100%;padding:10px;margin:10px 0;border-radius:5px;border:1px solid #ccc;}
 </style>
 </head>
-
 <body>
-
-<div class="header">
-  <h2>Refer & Earn</h2>
+<div class="container">
+<h2>Your Referral</h2>
+<p>Share your referral code and earn 5% of withdraw amount!</p>
+<input type="text" id="refCode" readonly>
+<p>Total Referrals: <span id="totalRef">0</span></p>
+<p>Total Referral Income: <span id="refIncome">0</span> points</p>
 </div>
 
-<div class="card">
-  <h3>Your Referral Code</h3>
-  <div class="ref-box" id="refCode">Loading...</div>
-  <button class="btn" onclick="copyCode()">Copy Referral Code</button>
-</div>
-
-<div class="card">
-  <h3>Referral Statistics</h3>
-  <div class="stats">
-    <div>
-      <b id="totalRef">0</b><br>
-      Total Referrals
-    </div>
-    <div>
-      <b id="refIncome">0</b><br>
-      Referral Income
-    </div>
-  </div>
-</div>
-
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
-  authDomain: "earnbdtapp.firebaseapp.com",
-  databaseURL: "https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  projectId: "earnbdtapp",
-  storageBucket: "earnbdtapp.firebasestorage.app",
-  messagingSenderId: "407276444050",
-  appId: "1:407276444050:web:b6ff2e075202716b5e094b"
-};
-
+const firebaseConfig = { /* Firebase Config */ };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-let myRefCode = "";
-
+let uid;
 onAuthStateChanged(auth,user=>{
-  if(!user){
-    location.href="login.html";
-    return;
-  }
-
-  loadReferral(user.uid);
+  if(!user) location.href="login.html";
+  uid=user.uid;
+  loadReferral();
 });
 
-function loadReferral(uid){
-  const userRef = ref(db,"users/"+uid);
-
-  onValue(userRef, snap=>{
-    if(!snap.exists()) return;
-
-    const d = snap.val();
-    myRefCode = d.referral_code || uid.substring(0,6);
-
-    document.getElementById("refCode").innerText = myRefCode;
-    document.getElementById("totalRef").innerText = d.total_referrals || 0;
-    document.getElementById("refIncome").innerText = d.referral_income || 0;
+function loadReferral(){
+  get(ref(db,"users/"+uid)).then(snap=>{
+    if(snap.exists()){
+      document.getElementById("refCode").value=snap.val().referral_code;
+      document.getElementById("totalRef").innerText=snap.val().total_referrals||0;
+      document.getElementById("refIncome").innerText=snap.val().referral_income||0;
+    }
   });
 }
-
-window.copyCode = function(){
-  navigator.clipboard.writeText(myRefCode);
-  alert("Referral code copied!");
-}
 </script>
-
 </body>
 </html>
