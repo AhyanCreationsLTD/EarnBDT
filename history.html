@@ -2,116 +2,61 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Withdraw History - EarnBDT</title>
+<title>History - EarnBDT</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#f4f6f9;
-}
-.header{
-  background:#0a7cff;
-  color:#fff;
-  padding:15px;
-  text-align:center;
-}
-.card{
-  background:#fff;
-  margin:15px;
-  padding:15px;
-  border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
-}
-.status{
-  font-weight:bold;
-  margin-top:8px;
-}
-.Pending{color:#ff9800;}
-.Approved{color:#007bff;}
-.Paid{color:#28a745;}
-.Rejected{color:#dc3545;}
-.empty{
-  text-align:center;
-  color:#777;
-  margin-top:40px;
-}
+body{font-family:Arial;background:#f4f6f9;margin:0;}
+.container{max-width:600px;margin:50px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.1);}
+table{width:100%;border-collapse:collapse;}
+th,td{border:1px solid #ccc;padding:10px;text-align:left;}
+th{background:#0a7cff;color:#fff;}
 </style>
 </head>
-
 <body>
-
-<div class="header">
-  <h2>My Withdraw History</h2>
+<div class="container">
+<h2>Withdraw History</h2>
+<table>
+<tr><th>Amount</th><th>Method</th><th>Number</th><th>Status</th><th>Time</th></tr>
+<tbody id="historyBody"></tbody>
+</table>
 </div>
 
-<div id="history"></div>
-
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getDatabase, ref, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
-  authDomain: "earnbdtapp.firebaseapp.com",
-  databaseURL: "https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  projectId: "earnbdtapp",
-  storageBucket: "earnbdtapp.firebasestorage.app",
-  messagingSenderId: "407276444050",
-  appId: "1:407276444050:web:b6ff2e075202716b5e094b"
-};
-
+const firebaseConfig = { /* Firebase Config */ };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-onAuthStateChanged(auth, user=>{
-  if(!user){
-    location.href="login.html";
-    return;
-  }
-
-  loadHistory(user.uid);
+let uid;
+onAuthStateChanged(auth,user=>{
+  if(!user) location.href="login.html";
+  uid=user.uid;
+  loadHistory();
 });
 
-function loadHistory(uid){
-  const q = query(
-    ref(db,"withdraw_requests"),
-    orderByChild("uid"),
-    equalTo(uid)
-  );
-
-  onValue(q, snap=>{
-    const box = document.getElementById("history");
-    box.innerHTML = "";
-
-    if(!snap.exists()){
-      box.innerHTML = "<div class='empty'>No withdraw history found</div>";
-      return;
-    }
-
-    snap.forEach(child=>{
-      const d = child.val();
-
-      const div = document.createElement("div");
-      div.className = "card";
-
-      div.innerHTML = `
-        <div><b>Amount:</b> ${d.amount} BDT</div>
-        <div><b>Method:</b> ${d.method}</div>
-        <div><b>Number:</b> ${d.number}</div>
-        <div><b>Date:</b> ${new Date(d.time).toLocaleString()}</div>
-        <div class="status ${d.status}">Status: ${d.status}</div>
-      `;
-
-      box.appendChild(div);
+function loadHistory(){
+  get(ref(db,"withdraw_requests")).then(snap=>{
+    const tbody=document.getElementById("historyBody");
+    tbody.innerHTML="";
+    snap.forEach(req=>{
+      const d=req.val();
+      if(d.uid===uid){
+        const time=new Date(d.time).toLocaleString();
+        tbody.innerHTML+=`<tr>
+          <td>${d.amount}</td>
+          <td>${d.method}</td>
+          <td>${d.number}</td>
+          <td>${d.status}</td>
+          <td>${time}</td>
+        </tr>`;
+      }
     });
   });
 }
 </script>
-
 </body>
 </html>
