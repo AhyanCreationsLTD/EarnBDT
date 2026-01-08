@@ -5,27 +5,107 @@
 <title>EarnBDT - Home</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { margin:0; font-family:'Poppins',sans-serif; background:#f0f4f8; }
-header { background:#0a7cff; color:#fff; padding:25px; text-align:center; border-bottom-left-radius:15px; border-bottom-right-radius:15px; }
-header h1 { margin:0; font-size:26px; }
-.container { max-width:500px; margin:20px auto; padding:10px; }
-.card { background:#fff; padding:25px; border-radius:15px; margin-bottom:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition: transform 0.2s;}
-.card:hover { transform: translateY(-5px); }
-.card h2 { margin:0 0 10px 0; color:#0a7cff; font-size:20px; }
-.card button { width:100%; padding:12px; margin:10px 0; border:none; border-radius:10px; background:#0a7cff; color:#fff; font-size:16px; cursor:pointer; transition:0.3s;}
-.card button:hover { background:#005bb5; }
-.card ul { padding-left:20px; color:#333; }
+/* Splash screen & page reset */
+* { box-sizing: border-box; margin:0; padding:0; }
+body, html { width:100%; height:100%; font-family:'Poppins', sans-serif; }
+
+/* Splash Screen */
+#splash {
+    position:fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: linear-gradient(135deg, #0a7cff, #00c6ff);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#fff;
+    flex-direction:column;
+    z-index:9999;
+    animation: fadeOut 1s ease 2s forwards;
+}
+#splash h1 { font-size:36px; margin-bottom:10px; }
+#splash p { font-size:18px; }
+
+/* Fadeout animation */
+@keyframes fadeOut {
+    to { opacity:0; visibility:hidden; }
+}
+
+/* Main Page */
+#main { display:none; padding-top:0; background:#f0f4f8; min-height:100vh; }
+
+header {
+    background: linear-gradient(135deg, #0a7cff, #00c6ff);
+    color:#fff;
+    padding:30px 15px;
+    text-align:center;
+    border-bottom-left-radius:20px;
+    border-bottom-right-radius:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+header h1 { font-size:28px; margin-bottom:5px; }
+header p { font-size:16px; color:#e0f7ff; }
+
+.container {
+    max-width:500px;
+    margin:20px auto;
+    padding:10px;
+}
+
+.card {
+    background:#fff;
+    padding:25px;
+    border-radius:20px;
+    margin-bottom:20px;
+    box-shadow:0 6px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow:0 10px 20px rgba(0,0,0,0.15);
+}
+.card h2 { margin-bottom:15px; color:#0a7cff; font-size:20px; }
+.card ul { list-style:none; padding-left:0; color:#555; }
+.card ul li { margin:10px 0; font-size:16px; }
+
+/* Buttons */
+button {
+    width:100%;
+    padding:14px;
+    margin:10px 0;
+    border:none;
+    border-radius:15px;
+    background:#0a7cff;
+    color:#fff;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.3s;
+}
+button:hover { background:#005bb5; }
+
+/* Feature emojis */
+.feature-emoji { margin-right:8px; }
+
+/* Footer */
 .footer { text-align:center; margin:30px 0 20px 0; color:#555; font-size:14px; }
 </style>
 </head>
 <body>
 
+<!-- Splash Screen -->
+<div id="splash">
+  <h1>EarnBDT</h1>
+  <p>Earn Money Online - Ads, Tasks & Referrals</p>
+</div>
+
+<!-- Main Page -->
+<div id="main">
 <header>
-<h1>EarnBDT</h1>
-<p>Earn money online by Ads, Tasks & Referrals</p>
+  <h1>EarnBDT</h1>
+  <p>Earn money online by watching Ads, completing Tasks & Referrals</p>
 </header>
 
 <div class="container">
+
   <div class="card">
     <h2>Get Started</h2>
     <button onclick="window.location.href='login.html'">Login</button>
@@ -35,17 +115,26 @@ header h1 { margin:0; font-size:26px; }
   <div class="card">
     <h2>How to Earn?</h2>
     <ul>
-      <li>Watch Ads & Earn Points</li>
-      <li>Complete Daily Tasks</li>
-      <li>Daily Rewards</li>
-      <li>Refer Friends & Earn Bonus</li>
-      <li>Withdraw Points for Cash</li>
+      <li><span class="feature-emoji">🎬</span>Watch Ads & Earn Points</li>
+      <li><span class="feature-emoji">✅</span>Complete Daily Tasks</li>
+      <li><span class="feature-emoji">🎁</span>Daily Rewards</li>
+      <li><span class="feature-emoji">👫</span>Refer Friends & Earn Bonus</li>
+      <li><span class="feature-emoji">💵</span>Withdraw Points for Cash</li>
     </ul>
   </div>
 
 </div>
 
 <div class="footer">@EarnBDT - Ahyan Creations LTD</div>
+</div>
+
+<script>
+// After 2s, hide splash and show main
+setTimeout(()=>{
+    document.getElementById('splash').style.display='none';
+    document.getElementById('main').style.display='block';
+},2000);
+</script>
 
 </body>
 </html>
