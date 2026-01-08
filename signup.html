@@ -4,12 +4,7 @@
 <meta charset="UTF-8">
 <title>Sign Up - EarnBDT</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body{font-family:Arial;margin:0;background:#f4f6f9;}
-.container{max-width:400px;margin:50px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.1);}
-input{width:100%;padding:10px;margin:10px 0;border-radius:5px;border:1px solid #ccc;}
-button{width:100%;padding:10px;border:none;border-radius:5px;background:#0a7cff;color:#fff;font-size:16px;cursor:pointer;}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
@@ -17,59 +12,59 @@ button{width:100%;padding:10px;border:none;border-radius:5px;background:#0a7cff;
 <input type="email" id="email" placeholder="Email">
 <input type="password" id="password" placeholder="Password">
 <input type="text" id="referral" placeholder="Referral Code (Optional)">
-<button onclick="signup()">Sign Up</button>
+<button id="signupBtn">Sign Up</button>
 <p>Already have account? <a href="login.html">Login</a></p>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { auth, db } from './firebaseConfig.js';
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { ref, set, get, update, push } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
-  authDomain: "earnbdtapp.firebaseapp.com",
-  databaseURL: "https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  projectId: "earnbdtapp",
-  storageBucket: "earnbdtapp.firebasestorage.app",
-  messagingSenderId: "407276444050",
-  appId: "1:407276444050:web:b6ff2e075202716b5e094b"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
+document.getElementById("signupBtn").onclick = async ()=>{
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const refCode = document.getElementById("referral").value.trim();
 
-window.signup = async ()=>{
-  const email=document.getElementById("email").value;
-  const password=document.getElementById("password").value;
-  const refCode=document.getElementById("referral").value.trim();
-
-  const cred=await createUserWithEmailAndPassword(auth,email,password);
-  const uid=cred.user.uid;
-  let referredBy="";
-
-  if(refCode!==""){
-    const snap=await get(ref(db,"users"));
-    snap.forEach(u=>{
-      if(u.val().referral_code===refCode){
-        referredBy=u.key;
-        update(ref(db,"users/"+u.key),{
-          total_referrals:(u.val().total_referrals||0)+1
-        });
-      }
-    });
+  if(!email || !password){
+    alert("Please fill all fields");
+    return;
   }
 
-  await set(ref(db,"users/"+uid),{
-    email:email,
-    balance:0,
-    referral_code:uid.substring(0,6),
-    referred_by:referredBy,
-    total_referrals:0,
-    referral_income:0
-  });
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+    const uid = userCredential.user.uid;
+    const userData = {
+      email,
+      balance: 10, // default 10 points for signup
+      referral_code: uid.slice(0,6), // simple code
+      referred_by: refCode || "",
+      referral_income: 0,
+      total_referrals: 0,
+      created_at: Date.now()
+    };
 
-  location.href="dashboard.html";
+    // Save new user
+    await set(ref(db,"users/"+uid), userData);
+
+    // If referral code used, add 10 points to referrer
+    if(refCode){
+      const refSnap = await get(ref(db,"users/"+refCode));
+      if(refSnap.exists()){
+        const refData = refSnap.val();
+        await update(ref(db,"users/"+refCode),{
+          balance: (refData.balance||0)+10,
+          total_referrals: (refData.total_referrals||0)+1
+        });
+      }
+    }
+
+    alert("Signup successful!");
+    window.location.href="login.html";
+
+  } catch(err){
+    alert(err.message);
+  }
 }
 </script>
 </body>
