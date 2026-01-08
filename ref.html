@@ -2,49 +2,82 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Refer & Earn - EarnBDT</title>
+<title>EarnBDT - Refer & Earn</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{font-family:Arial;background:#f4f6f9;margin:0;}
-.container{max-width:400px;margin:50px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.1);}
-input{width:100%;padding:10px;margin:10px 0;border-radius:5px;border:1px solid #ccc;}
+body,html{margin:0;padding:0;width:100%;height:100%;font-family:'Poppins',sans-serif;
+background:linear-gradient(135deg,#ff758c,#ff7eb3,#ffbcaa,#87f0ff,#b0eaff);background-size:1200% 1200%;animation:gradientBG 25s ease infinite;}
+@keyframes gradientBG{0%{background-position:0% 50%;}25%{background-position:50% 50%;}50%{background-position:100% 50%;}75%{background-position:50% 50%;}100%{background-position:0% 50%;}}
+
+.container{max-width:500px;margin:40px auto;padding:20px;background:rgba(255,255,255,0.95);border-radius:25px;box-shadow:0 8px 25px rgba(0,0,0,0.2);}
+h2{text-align:center;color:#ff758c;margin-bottom:20px;text-shadow:0 0 8px #fff;}
+input{width:100%;padding:12px;margin:10px 0;border-radius:15px;border:1px solid #ccc;font-size:16px;}
+input:focus{outline:none;border-color:#ff758c;box-shadow:0 0 10px #ff758c;}
+button{width:100%;padding:14px;border:none;border-radius:20px;background:linear-gradient(45deg,#ff758c,#ff7eb3,#ffbcaa);color:#fff;font-weight:600;cursor:pointer;transition:0.3s;}
+button:hover{transform:scale(1.05);box-shadow:0 8px 25px rgba(0,0,0,0.3);}
+.footer{text-align:center;margin:20px;color:#fff;font-size:14px;text-shadow:0 0 10px rgba(0,0,0,0.3);}
+.info{text-align:center;margin:15px;font-size:16px;color:#555;}
 </style>
 </head>
 <body>
+
 <div class="container">
-<h2>Your Referral</h2>
-<p>Share your referral code and earn 5% of withdraw amount!</p>
-<input type="text" id="refCode" readonly>
-<p>Total Referrals: <span id="totalRef">0</span></p>
-<p>Total Referral Income: <span id="refIncome">0</span> points</p>
+<h2>Refer & Earn</h2>
+<div class="info">
+  Share your referral code and earn 10 points per new user signup!
+</div>
+<input type="text" id="refCode" placeholder="Your Referral Code" readonly>
+<button id="copyBtn">Copy Code</button>
 </div>
 
+<div class="footer">@EarnBDT - Ahyan Creations LTD</div>
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
-const firebaseConfig = { /* Firebase Config */ };
+const firebaseConfig = {
+  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
+  authDomain: "earnbdtapp.firebaseapp.com",
+  projectId: "earnbdtapp",
+  storageBucket: "earnbdtapp.firebasestorage.app",
+  messagingSenderId: "407276444050",
+  appId: "1:407276444050:web:b6ff2e075202716b5e094b",
+  databaseURL:"https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/"
+};
+
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
+const auth = getAuth();
+const db = getDatabase();
 
-let uid;
+let currentUserUid = '';
+
 onAuthStateChanged(auth,user=>{
-  if(!user) location.href="login.html";
-  uid=user.uid;
-  loadReferral();
+  if(user){
+    currentUserUid = user.uid;
+    loadReferralCode();
+  }else{
+    window.location.href='login.html';
+  }
 });
 
-function loadReferral(){
-  get(ref(db,"users/"+uid)).then(snap=>{
-    if(snap.exists()){
-      document.getElementById("refCode").value=snap.val().referral_code;
-      document.getElementById("totalRef").innerText=snap.val().total_referrals||0;
-      document.getElementById("refIncome").innerText=snap.val().referral_income||0;
+function loadReferralCode(){
+  get(ref(db,'users/'+currentUserUid)).then(snapshot=>{
+    if(snapshot.exists()){
+      const data = snapshot.val();
+      document.getElementById('refCode').value = data.referral_code || currentUserUid;
     }
   });
 }
+
+document.getElementById('copyBtn').addEventListener('click',()=>{
+  const code = document.getElementById('refCode');
+  code.select();
+  code.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(code.value);
+  alert('Referral code copied: '+code.value);
+});
 </script>
 </body>
 </html>
