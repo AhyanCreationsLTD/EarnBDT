@@ -5,28 +5,132 @@
 <title>EarnBDT - Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-/* 🌈 Animated Gradient Background */
-body,html{margin:0;padding:0;width:100%;height:100%;font-family:'Poppins',sans-serif;
-background:linear-gradient(135deg,#ff758c,#ff7eb3,#ffbcaa,#87f0ff,#b0eaff);background-size:1200% 1200%;animation:gradientBG 25s ease infinite;}
-@keyframes gradientBG{0%{background-position:0% 50%;}25%{background-position:50% 50%;}50%{background-position:100% 50%;}75%{background-position:50% 50%;}100%{background-position:0% 50%;}}
+/* Gradient Animated Background */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(270deg,#ff758c,#ff7eb3,#ffbcaa,#87f0ff,#b0eaff);
+  background-size: 1000% 1000%;
+  animation: gradientBG 25s ease infinite;
+  overflow-x: hidden;
+}
+@keyframes gradientBG {
+  0%{background-position:0% 50%;}
+  25%{background-position:50% 50%;}
+  50%{background-position:100% 50%;}
+  75%{background-position:50% 50%;}
+  100%{background-position:0% 50%;}
+}
 
-.container{max-width:900px;margin:40px auto;padding:20px;background:rgba(255,255,255,0.95);border-radius:25px;box-shadow:0 8px 25px rgba(0,0,0,0.2);}
-.user-info{text-align:center;margin-bottom:30px;}
-.user-info h2{margin:5px;color:#ff758c;text-shadow:0 0 8px #fff;}
-.user-info p{margin:5px;color:#555;}
-.user-info button{margin-top:10px;padding:8px 15px;border:none;border-radius:15px;background:#ff758c;color:#fff;cursor:pointer;transition:0.3s;}
-.user-info button:hover{transform:scale(1.05);}
-.cards{display:flex;flex-wrap:wrap;justify-content:space-around;margin-bottom:20px;}
-.card{flex:1 1 250px;margin:10px;padding:20px;border-radius:20px;background:#ff758c;color:#fff;text-align:center;font-weight:600;cursor:pointer;transition:0.3s;box-shadow:0 6px 20px rgba(0,0,0,0.2);}
+/* Container */
+.container{
+  max-width: 450px;
+  margin: 30px auto;
+  padding: 20px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 25px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+/* User Info */
+.user-info h2{color:#ff758c;text-shadow:0 0 8px #fff;margin-bottom:5px;font-size:22px;}
+.user-info p{color:#555;margin-bottom:10px;font-size:16px;}
+.user-info button{
+  padding:12px 25px;
+  border:none;
+  border-radius:15px;
+  background:#ff758c;
+  color:#fff;
+  cursor:pointer;
+  font-weight:600;
+  font-size:16px;
+  transition:0.3s;
+  width:80%;
+}
+.user-info button:hover{transform:scale(1.05);box-shadow:0 4px 15px rgba(0,0,0,0.3);}
+
+/* Balance Card */
+.cards{
+  display:flex;
+  justify-content:center;
+  margin-bottom:25px;
+}
+.card{
+  background: linear-gradient(45deg,#ff758c,#ff7eb3,#ffbcaa);
+  color:#fff;
+  padding:25px 20px;
+  border-radius:20px;
+  font-weight:600;
+  font-size:18px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.3);
+  transition:0.3s;
+  cursor:pointer;
+  width:100%;
+  text-align:center;
+}
 .card:hover{transform:scale(1.05);}
-.card a{text-decoration:none;color:#fff;}
-.tasks{display:flex;flex-wrap:wrap;justify-content:space-around;}
-.task-btn{flex:1 1 180px;margin:10px;padding:15px;border-radius:20px;background:linear-gradient(45deg,#ff758c,#ff7eb3,#ffbcaa);color:#fff;text-align:center;font-weight:600;cursor:pointer;transition:0.3s;box-shadow:0 6px 20px rgba(0,0,0,0.2);}
-.task-btn:hover{transform:scale(1.05);}
-.footer{text-align:center;margin:20px;color:#fff;font-size:14px;text-shadow:0 0 10px rgba(0,0,0,0.3);}
 
-/* Floating WhatsApp Button */
-#whatsappBtn{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;background:#25D366;color:#fff;font-size:30px;text-align:center;line-height:60px;cursor:pointer;box-shadow:0 6px 15px rgba(0,0,0,0.3);}
+/* Task Buttons */
+.tasks{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.task-btn{
+  flex:1 1 100%;
+  margin:8px 0;
+  padding:18px;
+  border-radius:25px;
+  background: linear-gradient(45deg,#ff758c,#ff7eb3,#ffbcaa);
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+  box-shadow:0 6px 20px rgba(0,0,0,0.2);
+  font-size:16px;
+}
+.task-btn:hover{transform:scale(1.03);}
+.task-btn:active{transform:scale(0.98);}
+
+/* Footer */
+.footer{
+  text-align:center;
+  margin-top:25px;
+  color:#fff;
+  font-size:14px;
+  text-shadow:0 0 10px rgba(0,0,0,0.3);
+}
+
+/* Floating WhatsApp */
+#whatsappBtn{
+  position:fixed;
+  bottom:15px;
+  right:15px;
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  background:#25D366;
+  color:#fff;
+  font-size:28px;
+  text-align:center;
+  line-height:55px;
+  cursor:pointer;
+  box-shadow:0 6px 15px rgba(0,0,0,0.3);
+  transition:0.3s;
+}
+#whatsappBtn:hover{transform:scale(1.1);}
+
+/* Mobile Adjustments */
+@media screen and (max-width:480px){
+  .container{padding:15px;margin:20px;}
+  .user-info button{width:90%;}
+  .card{font-size:16px;padding:20px;}
+  .task-btn{font-size:15px;padding:16px;}
+}
 </style>
 </head>
 <body>
@@ -35,13 +139,13 @@ background:linear-gradient(135deg,#ff758c,#ff7eb3,#ffbcaa,#87f0ff,#b0eaff);backg
   <div class="user-info">
     <h2 id="username">Username</h2>
     <p id="email">user@example.com</p>
-    <button onclick="logout()">Logout</button>
+    <button id="logoutBtn">Logout</button>
   </div>
 
   <div class="cards">
     <div class="card">
       Balance: <span id="points">0</span> points
-      <br><a href="withdraw.html">Withdraw</a>
+      <br><a href="withdraw.html" style="color:#fff;text-decoration:underline;">Withdraw</a>
     </div>
   </div>
 
@@ -55,8 +159,7 @@ background:linear-gradient(135deg,#ff758c,#ff7eb3,#ffbcaa,#87f0ff,#b0eaff);backg
 </div>
 
 <div class="footer">@EarnBDT - Ahyan Creations LTD</div>
-
-<div id="whatsappBtn" onclick="openWhatsApp()">💬</div>
+<div id="whatsappBtn">💬</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
@@ -85,11 +188,12 @@ onAuthStateChanged(auth,user=>{
     document.getElementById('username').innerText = user.displayName || 'User';
     document.getElementById('email').innerText = user.email;
     loadPoints();
-  } else {
+  }else{
     window.location.href='login.html';
   }
 });
 
+// Load points
 function loadPoints(){
   get(ref(db,'users/'+currentUserUid)).then(snap=>{
     if(snap.exists()){
@@ -99,22 +203,36 @@ function loadPoints(){
   });
 }
 
-function logout(){signOut(auth).then(()=>{window.location.href='login.html';});}
+// Logout
+document.getElementById('logoutBtn').addEventListener('click',()=>{
+  signOut(auth).then(()=>window.location.href='login.html')
+  .catch(err=>alert('Logout failed: '+err.message));
+});
 
-// 🎥 Watch Ads +10 points
+// Watch Ads with Native Bridge
 function watchAds(){
-  get(ref(db,'users/'+currentUserUid)).then(snap=>{
-    if(snap.exists()){
-      const data = snap.val();
-      const newPoints = (data.points||0)+10;
-      update(ref(db,'users/'+currentUserUid),{points:newPoints});
-      document.getElementById('points').innerText = newPoints;
-      alert('You earned 10 points from watching ads!');
+    if(window.AndroidInterface && typeof window.AndroidInterface.showRewardedAd === 'function'){
+        window.AndroidInterface.showRewardedAd();
+    } else if(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.showRewardedAd){
+        window.webkit.messageHandlers.showRewardedAd.postMessage({});
+    } else {
+        alert("This works only in the app! Watching ads in web is not supported.");
     }
-  });
 }
 
-// 🎁 Daily Reward +2 points (once per day)
+// Called from Native App after user watches Ad
+function addPointsFromAd(){
+    get(ref(db,'users/'+currentUserUid)).then(snap=>{
+        if(snap.exists()){
+            const newPoints = (snap.val().points||0)+10;
+            update(ref(db,'users/'+currentUserUid),{points:newPoints});
+            document.getElementById('points').innerText = newPoints;
+            alert('You earned 10 points from watching ads!');
+        }
+    });
+}
+
+// Daily Reward +2 points (once/day)
 function dailyReward(){
   const today = new Date().toDateString();
   get(ref(db,'users/'+currentUserUid)).then(snap=>{
@@ -132,12 +250,12 @@ function dailyReward(){
   });
 }
 
-// 💬 WhatsApp floating button
-function openWhatsApp(){
+// WhatsApp button
+document.getElementById('whatsappBtn').addEventListener('click',()=>{
   const email = document.getElementById('email').innerText;
   const msg = encodeURIComponent(`Assalamualaikum Admin, My email: ${email}, I have a problem and that is....`);
   window.open(`https://wa.me/message/TK6MRRKKRD2TC1?text=${msg}`,'_blank');
-}
+});
 </script>
 </body>
 </html>
