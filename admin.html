@@ -1,149 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Admin Panel - EarnBDT</title>
+<title>Admin Dashboard - EarnBDT</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#f4f6f9;
-}
-.header{
-  background:#222;
-  color:#fff;
-  padding:15px;
-  text-align:center;
-}
-.card{
-  background:#fff;
-  margin:15px;
-  padding:15px;
-  border-radius:8px;
-  box-shadow:0 2px 5px rgba(0,0,0,.1);
-}
-.status{
-  font-weight:bold;
-  margin-top:5px;
-}
-button{
-  padding:8px 12px;
-  margin:5px 5px 0 0;
-  border:none;
-  border-radius:5px;
-  cursor:pointer;
-}
+body{font-family:Arial;background:#f4f6f9;margin:0;}
+.container{max-width:800px;margin:50px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.1);}
+table{width:100%;border-collapse:collapse;}
+th,td{border:1px solid #ccc;padding:10px;text-align:left;}
+th{background:#0a7cff;color:#fff;}
+button{padding:5px 10px;margin:2px;border:none;border-radius:5px;cursor:pointer;}
 .approve{background:#28a745;color:#fff;}
 .reject{background:#dc3545;color:#fff;}
 .paid{background:#007bff;color:#fff;}
 </style>
 </head>
-
 <body>
-
-<div class="header">
-  <h2>Admin Withdraw Requests</h2>
+<div class="container">
+<h2>Withdraw Requests</h2>
+<table>
+<tr><th>User Email</th><th>Amount</th><th>Method</th><th>Number</th><th>Status</th><th>Action</th></tr>
+<tbody id="requestsBody"></tbody>
+</table>
 </div>
-
-<div id="list"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
-  authDomain: "earnbdtapp.firebaseapp.com",
-  databaseURL: "https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  projectId: "earnbdtapp",
-  storageBucket: "earnbdtapp.firebasestorage.app",
-  messagingSenderId: "407276444050",
-  appId: "1:407276444050:web:b6ff2e075202716b5e094b"
-};
-
-const ADMIN_EMAIL = "ahyanarfinofficial@gmail.com";
-
+const firebaseConfig = { /* Firebase Config */ };
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getDatabase(app);
 
-onAuthStateChanged(auth, user=>{
-  if(!user || user.email !== ADMIN_EMAIL){
-    alert("আপনার জন্য এটা নয়");
-    location.href="login.html";
-    return;
-  }
-
-  loadRequests();
-});
+const COMMISSION_RATE=0.05;
 
 function loadRequests(){
-  onValue(ref(db,"withdraw_requests"), snap=>{
-    const list = document.getElementById("list");
-    list.innerHTML = "";
+  get(ref(db,"withdraw_requests")).then(snap=>{
+    const tbody=document.getElementById("requestsBody");
+    tbody.innerHTML="";
+    snap.forEach(req=>{
+      const d=req.val();
+      const id=req.key;
+      let action=`<button class="approve" onclick="approve('${id}','${d.uid}',${d.amount})">Approve</button>
+                  <button class="reject" onclick="reject('${id}','${d.uid}',${d.amount})">Reject</button>`;
+      if(d.status==="approved") action=`<button class="paid" onclick="markPaid('${id}','${d.uid}',${d.amount})">Paid</button>`;
+      tbody.innerHTML+=`<tr>
+        <td>${d.email}</td>
+        <td>${d.amount}</td>
+        <td>${d.method}</td>
+        <td>${d.number}</td>
+        <td>${d.status}</td>
+        <td>${action}</td>
+      </tr>`;
+    });
+  });
+}
+loadRequests();
 
-    if(!snap.exists()){
-      list.innerHTML = "<p style='text-align:center'>No requests</p>";
-      return;
+window.approve=(reqId,uid,amount)=>{
+  update(ref(db,"withdraw_requests/"+reqId),{status:"approved"}).then(()=>loadRequests());
+}
+
+window.reject=(reqId,uid,amount)=>{
+  get(ref(db,"users/"+uid)).then(s=>{
+    if(s.exists()) update(ref(db,"users/"+uid),{balance:(s.val().balance||0)+amount});
+    update(ref(db,"withdraw_requests/"+reqId),{status:"rejected"}).then(()=>loadRequests());
+  });
+}
+
+window.markPaid=(reqId,uid,amount)=>{
+  get(ref(db,"users/"+uid)).then(userSnap=>{
+    if(userSnap.exists()){
+      const user=userSnap.val();
+      if(user.referred_by){
+        const bonus=Math.floor(amount*COMMISSION_RATE);
+        const refUserRef=ref(db,"users/"+user.referred_by);
+        get(refUserRef).then(rs=>{
+          if(rs.exists()){
+            const r=rs.val();
+            update(refUserRef,{balance:(r.balance||0)+bonus,referral_income:(r.referral_income||0)+bonus});
+          }
+        });
+      }
+      update(ref(db,"withdraw_requests/"+reqId),{status:"paid"}).then(()=>loadRequests());
     }
-
-    snap.forEach(child=>{
-      const d = child.val();
-      const key = child.key;
-
-      const div = document.createElement("div");
-      div.className = "card";
-
-      div.innerHTML = `
-        <div><b>User:</b> ${d.username}</div>
-        <div><b>Email:</b> ${d.email}</div>
-        <div><b>Method:</b> ${d.method}</div>
-        <div><b>Number:</b> ${d.number}</div>
-        <div><b>Amount:</b> ${d.amount}</div>
-        <div class="status">Status: ${d.status}</div>
-      `;
-
-      if(d.status === "Pending"){
-        addBtn(div,"Approve","approve",()=>updateStatus(key,"Approved"));
-        addBtn(div,"Reject","reject",()=>rejectRequest(key,d.uid,d.amount));
-      }
-
-      if(d.status === "Approved"){
-        addBtn(div,"Paid","paid",()=>updateStatus(key,"Paid"));
-      }
-
-      list.appendChild(div);
-    });
-  });
-}
-
-function addBtn(parent,text,cls,fn){
-  const b = document.createElement("button");
-  b.innerText = text;
-  b.className = cls;
-  b.onclick = fn;
-  parent.appendChild(b);
-}
-
-function updateStatus(key,status){
-  update(ref(db,"withdraw_requests/"+key),{
-    status: status
-  });
-}
-
-function rejectRequest(key,uid,amount){
-  get(ref(db,"users/"+uid+"/balance")).then(snap=>{
-    const bal = Number(snap.val() || 0);
-    update(ref(db),{
-      ["withdraw_requests/"+key+"/status"]:"Rejected",
-      ["users/"+uid+"/balance"]: bal + amount
-    });
   });
 }
 </script>
-
 </body>
 </html>
