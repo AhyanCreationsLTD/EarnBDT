@@ -2,104 +2,46 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>EarnBDT Dashboard</title>
+<title>Dashboard - EarnBDT</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-body{
-  margin:0;
-  font-family: Arial, sans-serif;
-  background:#f4f6f9;
-}
-.header{
-  background:#0a7cff;
-  color:#fff;
-  padding:20px;
-  text-align:center;
-}
-.card{
-  background:#fff;
-  margin:15px;
-  padding:15px;
-  border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
-}
-.balance{
-  font-size:28px;
-  font-weight:bold;
-  color:#0a7cff;
-}
-.btn{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:none;
-  border-radius:6px;
-  font-size:16px;
-  cursor:pointer;
-}
-.primary{background:#0a7cff;color:#fff;}
-.green{background:#28a745;color:#fff;}
-.orange{background:#ff9800;color:#fff;}
-.gray{background:#ccc;}
-.footer{
-  text-align:center;
-  margin:30px 0;
-  color:#777;
-  font-size:14px;
-}
-.fab{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  background:#25D366;
-  color:#fff;
-  width:55px;
-  height:55px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:28px;
-  text-decoration:none;
-}
+body{font-family:Arial;margin:0;background:#f4f6f9;}
+.header{background:#0a7cff;color:#fff;padding:15px;text-align:center;}
+.card{background:#fff;margin:15px;padding:15px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.1);}
+button{padding:10px 15px;margin:5px;border:none;border-radius:5px;background:#28a745;color:#fff;cursor:pointer;}
+.link{margin-top:10px;display:block;color:#0a7cff;text-decoration:none;}
+.note{font-size:14px;color:#555;}
 </style>
 </head>
-
 <body>
 
 <div class="header">
-  <h2 id="username">Loading...</h2>
-  <p id="email"></p>
-  <button class="btn gray" onclick="logout()">Logout</button>
+  <h2 id="userName">Loading...</h2>
+  <p id="userEmail"></p>
+  <button onclick="logout()">Logout</button>
 </div>
 
 <div class="card">
-  <div>Balance</div>
-  <div class="balance" id="balance">0 BDT</div>
-  <button class="btn orange" onclick="withdraw()">Withdraw</button>
+  <h3>Balance</h3>
+  <p id="balanceText">Loading...</p>
+  <p class="note">Note: 1050 points = 100 BDT</p>
+  <a href="withdraw.html"><button>Withdraw</button></a>
 </div>
 
 <div class="card">
-  <button class="btn primary" onclick="watchAd()">🎥 Watch Ads (+10)</button>
-  <button class="btn green" onclick="dailyReward()">🎁 Daily Reward (+2)</button>
-  <button class="btn primary" onclick="location.href='task.html'">✅ Daily Tasks</button>
-  <button class="btn primary" onclick="location.href='ref.html'">👥 Refer & Earn</button>
-  <button class="btn primary" onclick="location.href='history.html'">📜 My History</button>
+  <button onclick="watchAd()">Watch Ads (+10 points)</button>
+  <button onclick="dailyReward()">Daily Reward (+2 points)</button>
+  <a href="task.html"><button>Daily Tasks (+5 points per task)</button></a>
+  <a href="ref.html"><button>Refer & Earn</button></a>
+  <a href="history.html"><button>My History</button></a>
 </div>
 
-<div class="footer">
-  © EarnBDT - Ahyan Creations LTD
-</div>
+<p style="text-align:center;margin-top:30px;">@EarnBDT - Ahyan Creations LTD</p>
 
-<!-- WhatsApp Floating Button -->
-<a class="fab" id="whatsappBtn">💬</a>
-
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
@@ -110,67 +52,54 @@ const firebaseConfig = {
   messagingSenderId: "407276444050",
   appId: "1:407276444050:web:b6ff2e075202716b5e094b"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-let currentBalance = 0;
-let currentEmail = "";
+let currentUid;
 
-onAuthStateChanged(auth, user=>{
-  if(!user){
-    location.href="login.html";
-    return;
-  }
-
-  document.getElementById("email").innerText = user.email;
-  currentEmail = user.email;
-
-  const uid = user.uid;
-  get(ref(db, "users/"+uid)).then(snap=>{
-    if(snap.exists()){
-      const data = snap.val();
-      document.getElementById("username").innerText = data.username || "User";
-      currentBalance = Number(data.balance || 0);
-      document.getElementById("balance").innerText = currentBalance + " BDT";
-      setupWhatsapp();
-    }
-  });
+onAuthStateChanged(auth,user=>{
+  if(!user) location.href="login.html";
+  currentUid=user.uid;
+  document.getElementById("userName").innerText=user.email.split("@")[0];
+  document.getElementById("userEmail").innerText=user.email;
+  loadBalance();
 });
 
-window.logout = function(){
-  signOut(auth).then(()=>location.href="login.html");
+function logout(){ signOut(auth).then(()=>location.href="login.html"); }
+
+function loadBalance(){
+  get(ref(db,"users/"+currentUid)).then(snap=>{
+    if(snap.exists()){
+      document.getElementById("balanceText").innerText=snap.val().balance || 0 + " points";
+    }
+  });
 }
 
-window.withdraw = function(){
-  if(currentBalance < 1050){
-    alert("Withdraw করতে হলে কমপক্ষে 1050 পয়েন্ট লাগবে");
-    return;
-  }
-  location.href="withdraw.html";
+// Daily reward
+function dailyReward(){
+  const today = new Date().toDateString();
+  const key = "lastDaily";
+  get(ref(db,"users/"+currentUid+"/"+key)).then(snap=>{
+    if(snap.exists() && snap.val()===today){ alert("You already claimed today!"); return; }
+    get(ref(db,"users/"+currentUid)).then(userSnap=>{
+      const bal=(userSnap.val().balance||0)+2;
+      update(ref(db,"users/"+currentUid),{balance:bal,lastDaily:today});
+      alert("+2 points added!");
+      loadBalance();
+    });
+  });
 }
 
-window.watchAd = function(){
-  if(window.Android){
-    Android.showRewardedAd(); // App bridge
-  }else{
-    alert("Please use our Android App");
-  }
-}
-
-window.dailyReward = function(){
-  alert("Daily Reward logic app/Firebase side এ বসবে");
-}
-
-function setupWhatsapp(){
-  const text = encodeURIComponent(
-    "Assalamualaikum Admin, My email: "+currentEmail+", I have a problem and that is..."
-  );
-  document.getElementById("whatsappBtn").href =
-    "https://wa.me/8801604444716?text="+text;
+// Watch Ad
+function watchAd(){
+  get(ref(db,"users/"+currentUid)).then(userSnap=>{
+    const bal=(userSnap.val().balance||0)+10;
+    update(ref(db,"users/"+currentUid),{balance:bal});
+    alert("+10 points added!");
+    loadBalance();
+  });
 }
 </script>
-
 </body>
 </html>
