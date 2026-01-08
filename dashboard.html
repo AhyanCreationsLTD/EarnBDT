@@ -2,107 +2,95 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>EarnBDT - Dashboard</title>
+<title>EarnBDT Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
-/* Gradient Animated Background */
-body, html {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(270deg,#ff758c,#ff7eb3,#ffbcaa,#87f0ff,#b0eaff);
-  background-size: 1000% 1000%;
-  animation: gradientBG 25s ease infinite;
-  overflow-x: hidden;
+body, html{
+  margin:0; padding:0;
+  font-family:'Poppins', sans-serif;
+  background: linear-gradient(120deg,#6dd5ed,#2193b0);
+  background-size: 400% 400%;
+  animation: gradientBG 20s ease infinite;
+  overflow-x:hidden;
 }
-@keyframes gradientBG {
+@keyframes gradientBG{
   0%{background-position:0% 50%;}
-  25%{background-position:50% 50%;}
   50%{background-position:100% 50%;}
-  75%{background-position:50% 50%;}
   100%{background-position:0% 50%;}
 }
 
-/* Container */
 .container{
-  max-width: 450px;
-  margin: 30px auto;
-  padding: 20px;
-  background: rgba(255,255,255,0.95);
-  border-radius: 25px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-  text-align: center;
+  max-width:480px;
+  margin:20px auto;
+  padding:20px;
+  background:#fff;
+  border-radius:25px;
+  box-shadow:0 12px 25px rgba(0,0,0,0.2);
+  text-align:center;
 }
 
-/* User Info */
-.user-info h2{color:#ff758c;text-shadow:0 0 8px #fff;margin-bottom:5px;font-size:22px;}
-.user-info p{color:#555;margin-bottom:10px;font-size:16px;}
+/* User Info Header */
+.user-info{
+  padding:15px;
+  border-radius:20px;
+  background:#f7f7f7;
+  box-shadow:0 6px 12px rgba(0,0,0,0.1);
+  margin-bottom:20px;
+  animation:fadeUp 0.5s ease forwards;
+}
+.user-info h2{margin:0; font-size:22px; color:#333;}
+.user-info p{margin:2px 0 10px; color:#666;}
 .user-info button{
   padding:12px 25px;
   border:none;
-  border-radius:15px;
-  background:#ff758c;
+  border-radius:12px;
+  background:#2193b0;
   color:#fff;
-  cursor:pointer;
   font-weight:600;
-  font-size:16px;
+  cursor:pointer;
   transition:0.3s;
-  width:80%;
 }
-.user-info button:hover{transform:scale(1.05);box-shadow:0 4px 15px rgba(0,0,0,0.3);}
+.user-info button:hover{transform:scale(1.05);}
 
 /* Balance Card */
-.cards{
-  display:flex;
-  justify-content:center;
-  margin-bottom:25px;
-}
 .card{
-  background: linear-gradient(45deg,#ff758c,#ff7eb3,#ffbcaa);
+  background: linear-gradient(45deg,#6dd5ed,#2193b0);
   color:#fff;
   padding:25px 20px;
   border-radius:20px;
   font-weight:600;
-  font-size:18px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.3);
+  font-size:20px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.25);
+  margin-bottom:25px;
   transition:0.3s;
-  cursor:pointer;
-  width:100%;
-  text-align:center;
 }
-.card:hover{transform:scale(1.05);}
+.card:hover{transform:scale(1.03);}
 
 /* Task Buttons */
 .tasks{
   display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
+  flex-direction:column;
+  gap:12px;
 }
 .task-btn{
-  flex:1 1 100%;
-  margin:8px 0;
   padding:18px;
-  border-radius:25px;
-  background: linear-gradient(45deg,#ff758c,#ff7eb3,#ffbcaa);
+  border-radius:20px;
+  background: linear-gradient(90deg,#6dd5ed,#2193b0);
   color:#fff;
   font-weight:600;
+  font-size:16px;
   cursor:pointer;
   transition:0.3s;
-  box-shadow:0 6px 20px rgba(0,0,0,0.2);
-  font-size:16px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.2);
 }
 .task-btn:hover{transform:scale(1.03);}
-.task-btn:active{transform:scale(0.98);}
 
 /* Footer */
 .footer{
-  text-align:center;
-  margin-top:25px;
+  margin-top:20px;
   color:#fff;
   font-size:14px;
-  text-shadow:0 0 10px rgba(0,0,0,0.3);
 }
 
 /* Floating WhatsApp */
@@ -124,12 +112,16 @@ body, html {
 }
 #whatsappBtn:hover{transform:scale(1.1);}
 
+/* Animations */
+@keyframes fadeUp{
+  0%{opacity:0; transform:translateY(20px);}
+  100%{opacity:1; transform:translateY(0);}
+}
+
 /* Mobile Adjustments */
 @media screen and (max-width:480px){
-  .container{padding:15px;margin:20px;}
+  .container{padding:15px;margin:15px;}
   .user-info button{width:90%;}
-  .card{font-size:16px;padding:20px;}
-  .task-btn{font-size:15px;padding:16px;}
 }
 </style>
 </head>
@@ -142,11 +134,9 @@ body, html {
     <button id="logoutBtn">Logout</button>
   </div>
 
-  <div class="cards">
-    <div class="card">
-      Balance: <span id="points">0</span> points
-      <br><a href="withdraw.html" style="color:#fff;text-decoration:underline;">Withdraw</a>
-    </div>
+  <div class="card">
+    Balance: <span id="points">0</span> points
+    <br><a href="withdraw.html" style="color:#fff; text-decoration:underline;">Withdraw</a>
   </div>
 
   <div class="tasks">
@@ -179,81 +169,74 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getDatabase();
-
-let currentUserUid = '';
+let currentUserUid='';
 
 onAuthStateChanged(auth,user=>{
   if(user){
-    currentUserUid = user.uid;
-    document.getElementById('username').innerText = user.displayName || 'User';
-    document.getElementById('email').innerText = user.email;
+    currentUserUid=user.uid;
+    document.getElementById('username').innerText=user.displayName||'User';
+    document.getElementById('email').innerText=user.email;
     loadPoints();
   }else{
     window.location.href='login.html';
   }
 });
 
-// Load points
 function loadPoints(){
   get(ref(db,'users/'+currentUserUid)).then(snap=>{
     if(snap.exists()){
-      const data = snap.val();
-      document.getElementById('points').innerText = data.points || 0;
+      const data=snap.val();
+      document.getElementById('points').innerText=data.points||0;
     }
   });
 }
 
-// Logout
 document.getElementById('logoutBtn').addEventListener('click',()=>{
-  signOut(auth).then(()=>window.location.href='login.html')
-  .catch(err=>alert('Logout failed: '+err.message));
+  signOut(auth).then(()=>window.location.href='login.html').catch(err=>alert(err.message));
 });
 
-// Watch Ads with Native Bridge
+// Watch Ads bridge
 function watchAds(){
-    if(window.AndroidInterface && typeof window.AndroidInterface.showRewardedAd === 'function'){
-        window.AndroidInterface.showRewardedAd();
-    } else if(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.showRewardedAd){
-        window.webkit.messageHandlers.showRewardedAd.postMessage({});
-    } else {
-        alert("This works only in the app! Watching ads in web is not supported.");
-    }
+  if(window.AndroidInterface && typeof window.AndroidInterface.showRewardedAd==='function'){
+    window.AndroidInterface.showRewardedAd();
+  }else if(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.showRewardedAd){
+    window.webkit.messageHandlers.showRewardedAd.postMessage({});
+  }else{
+    alert("This works only in the app!");
+  }
 }
 
-// Called from Native App after user watches Ad
+// Called from Native App
 function addPointsFromAd(){
-    get(ref(db,'users/'+currentUserUid)).then(snap=>{
-        if(snap.exists()){
-            const newPoints = (snap.val().points||0)+10;
-            update(ref(db,'users/'+currentUserUid),{points:newPoints});
-            document.getElementById('points').innerText = newPoints;
-            alert('You earned 10 points from watching ads!');
-        }
-    });
-}
-
-// Daily Reward +2 points (once/day)
-function dailyReward(){
-  const today = new Date().toDateString();
   get(ref(db,'users/'+currentUserUid)).then(snap=>{
     if(snap.exists()){
-      const data = snap.val();
-      if(data.lastDaily === today){
-        alert('You already claimed daily reward today!');
-        return;
-      }
-      const newPoints = (data.points||0)+2;
-      update(ref(db,'users/'+currentUserUid),{points:newPoints,lastDaily:today});
-      document.getElementById('points').innerText = newPoints;
-      alert('Daily reward claimed! +2 points');
+      const newPoints=(snap.val().points||0)+10;
+      update(ref(db,'users/'+currentUserUid),{points:newPoints});
+      document.getElementById('points').innerText=newPoints;
+      alert('You earned 10 points from ads!');
     }
   });
 }
 
-// WhatsApp button
+// Daily reward
+function dailyReward(){
+  const today=new Date().toDateString();
+  get(ref(db,'users/'+currentUserUid)).then(snap=>{
+    if(snap.exists()){
+      const data=snap.val();
+      if(data.lastDaily===today){alert('Already claimed today!'); return;}
+      const newPoints=(data.points||0)+2;
+      update(ref(db,'users/'+currentUserUid),{points:newPoints,lastDaily:today});
+      document.getElementById('points').innerText=newPoints;
+      alert('+2 points claimed!');
+    }
+  });
+}
+
+// WhatsApp
 document.getElementById('whatsappBtn').addEventListener('click',()=>{
-  const email = document.getElementById('email').innerText;
-  const msg = encodeURIComponent(`Assalamualaikum Admin, My email: ${email}, I have a problem and that is....`);
+  const email=document.getElementById('email').innerText;
+  const msg=encodeURIComponent(`Assalamualaikum Admin, My email: ${email}, I have a problem and that is....`);
   window.open(`https://wa.me/message/TK6MRRKKRD2TC1?text=${msg}`,'_blank');
 });
 </script>
