@@ -56,6 +56,11 @@ button{animation-delay:1.5s;}
 #adminBtn{width:40%;background:#00c6ff;margin:5px auto;display:block;font-size:14px;transition:0.3s;}
 #adminBtn:hover{background:#0077aa;transform:scale(1.05);}
 
+/* Forget password / Signup link */
+.links{text-align:center;margin-top:10px;}
+.links a{text-decoration:none;color:#ff758c;margin:0 10px;font-size:14px;transition:0.3s;}
+.links a:hover{color:#ff0; text-shadow:0 0 8px #fff;}
+
 /* Footer */
 .footer{text-align:center;margin:15px;color:#fff;font-size:14px;text-shadow:0 0 10px rgba(0,0,0,0.3);}
 </style>
@@ -73,6 +78,12 @@ button{animation-delay:1.5s;}
   <input type="password" id="password" placeholder="Password" required>
   <button type="submit">Login</button>
 </form>
+
+<div class="links">
+  <a href="forget.html">Forget Password?</a> |
+  <a href="signup.html">Already have an account?</a>
+</div>
+
 <button id="adminBtn" onclick="window.location.href='adminlogin.html'">Admin Panel</button>
 </div>
 
@@ -80,8 +91,7 @@ button{animation-delay:1.5s;}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
@@ -95,7 +105,14 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
-const db = getDatabase();
+
+// ✅ Auto login if already signed in
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User already signed in, redirect to dashboard
+    window.location.href = 'dashboard.html';
+  }
+});
 
 document.getElementById('loginForm').addEventListener('submit', function(e){
   e.preventDefault();
@@ -104,8 +121,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e){
 
   signInWithEmailAndPassword(auth,email,password)
   .then((userCredential)=>{
-    const uid = userCredential.user.uid;
-    // Redirect to dashboard
+    // Login successful
     window.location.href='dashboard.html';
   })
   .catch((error)=>{
