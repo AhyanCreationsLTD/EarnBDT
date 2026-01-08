@@ -2,70 +2,154 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sign Up - EarnBDT</title>
+<title>EarnBDT - Sign Up</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body,html{width:100%;height:100%;font-family:'Poppins',sans-serif;overflow-x:hidden;}
+
+/* Main Page */
+#main{display:none;min-height:100vh;position:relative;
+background: linear-gradient(-45deg,#0a7cff,#00c6ff,#6bf,#0af);
+background-size:400% 400%; animation:bgAnimate 20s ease infinite; transition:0.3s;}
+@keyframes bgAnimate{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+
+/* Particles & Sparkles */
+#particles{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;}
+.particle,.sparkle{position:absolute;border-radius:50%;}
+.particle{background:rgba(255,255,255,0.7);}
+.sparkle{background:#fff;}
+
+/* Container & Header */
+.container{max-width:400px;margin:30px auto;padding:20px;position:relative;z-index:2;background:rgba(255,255,255,0.9);border-radius:20px;box-shadow:0 6px 20px rgba(0,0,0,0.2);}
+h1{text-align:center;color:#0a7cff;font-size:28px;margin-bottom:20px;animation:headerBounce 2s infinite alternate;}
+@keyframes headerBounce{0%{transform:translateY(0);}50%{transform:translateY(-5px);}100%{transform:translateY(0);}}
+
+/* Form Fields */
+input{width:100%;padding:12px 15px;margin:10px 0;border-radius:15px;border:1px solid #ccc;font-size:16px;transition:0.3s;}
+input:focus{border-color:#0a7cff;box-shadow:0 0 10px #0a7cff;outline:none;}
+button{width:100%;padding:14px;margin:15px 0;border:none;border-radius:15px;background:#0a7cff;color:#fff;font-size:16px;cursor:pointer;transition:0.3s,transform 0.2s,box-shadow 0.2s;}
+button:hover{background:#005bb5;transform:scale(1.05);box-shadow:0 0 20px #0a7cff;}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(50px);}to{opacity:1;transform:translateY(0);}}
+input,button{opacity:0;animation:fadeUp 0.8s forwards;}
+input:nth-child(2){animation-delay:0.5s;}
+input:nth-child(3){animation-delay:1s;}
+input:nth-child(4){animation-delay:1.5s;}
+button{animation-delay:2s;}
+
+/* Footer */
+.footer{text-align:center;margin:20px 0;color:#fff;font-size:14px;text-shadow:0 0 10px rgba(0,0,0,0.3);animation:glow 3s infinite;}
+@keyframes glow{0%{text-shadow:0 0 5px #fff;}50%{text-shadow:0 0 25px #fff;}100%{text-shadow:0 0 5px #fff;}}
+
+/* Tap effect */
+#main:active{background: linear-gradient(-45deg,#ff6b6b,#f0a,#6bf,#0af);background-size:400% 400%;}
+</style>
 </head>
 <body>
+
+<div id="main">
+<div id="particles"></div>
 <div class="container">
-<h2>Sign Up</h2>
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
-<input type="text" id="referral" placeholder="Referral Code (Optional)">
-<button id="signupBtn">Sign Up</button>
-<p>Already have account? <a href="login.html">Login</a></p>
+<h1>Sign Up</h1>
+<form id="signupForm">
+  <input type="text" id="username" placeholder="Username" required>
+  <input type="email" id="email" placeholder="Email" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <input type="text" id="referral" placeholder="Referral Code (Optional)">
+  <button type="submit">Sign Up</button>
+</form>
+</div>
+<div class="footer">@EarnBDT - Ahyan Creations LTD</div>
 </div>
 
+<!-- Firebase SDK -->
 <script type="module">
-import { auth, db } from './firebaseConfig.js';
-import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { ref, set, get, update, push } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
-document.getElementById("signupBtn").onclick = async ()=>{
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const refCode = document.getElementById("referral").value.trim();
+const firebaseConfig = {
+  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
+  authDomain: "earnbdtapp.firebaseapp.com",
+  projectId: "earnbdtapp",
+  storageBucket: "earnbdtapp.firebasestorage.app",
+  messagingSenderId: "407276444050",
+  appId: "1:407276444050:web:b6ff2e075202716b5e094b",
+  databaseURL:"https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/"
+};
 
-  if(!email || !password){
-    alert("Please fill all fields");
-    return;
-  }
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getDatabase();
 
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+document.getElementById('signupForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const username = document.getElementById('username').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const referral = document.getElementById('referral').value.trim();
+
+  createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredential)=>{
     const uid = userCredential.user.uid;
-    const userData = {
-      email,
-      balance: 10, // default 10 points for signup
-      referral_code: uid.slice(0,6), // simple code
-      referred_by: refCode || "",
-      referral_income: 0,
-      total_referrals: 0,
-      created_at: Date.now()
-    };
+    let points = 0;
+    if(referral){points +=10;} // 10 points for using referral
+    set(ref(db,'users/'+uid), {
+      username: username,
+      email: email,
+      points: points,
+      referralUsed: referral||"",
+      createdAt: Date.now()
+    }).then(()=>{
+      alert('Sign Up Successful! '+(points>0?"You got 10 points for referral!":""));
+      window.location.href='login.html';
+    });
+  })
+  .catch((error)=>{
+    alert(error.message);
+  });
+});
+</script>
 
-    // Save new user
-    await set(ref(db,"users/"+uid), userData);
+<script>
+// Show main page + particles
+window.addEventListener('load', ()=>{
+  document.getElementById('main').style.display='block';
+  generateParticles(30);
+  generateSparkles(15);
+});
 
-    // If referral code used, add 10 points to referrer
-    if(refCode){
-      const refSnap = await get(ref(db,"users/"+refCode));
-      if(refSnap.exists()){
-        const refData = refSnap.val();
-        await update(ref(db,"users/"+refCode),{
-          balance: (refData.balance||0)+10,
-          total_referrals: (refData.total_referrals||0)+1
-        });
-      }
+// Particle generator
+function generateParticles(count){
+    const container=document.getElementById('particles');
+    for(let i=0;i<count;i++){
+        let p=document.createElement('div');
+        p.className='particle';
+        p.style.left=Math.random()*100+'%';
+        p.style.width=p.style.height=(5+Math.random()*5)+'px';
+        p.style.animationDuration=(5+Math.random()*5)+'s';
+        p.style.animationDelay=Math.random()*5+'s';
+        container.appendChild(p);
     }
+}
 
-    alert("Signup successful!");
-    window.location.href="login.html";
-
-  } catch(err){
-    alert(err.message);
-  }
+// Sparkle generator
+function generateSparkles(count){
+    const container=document.getElementById('particles');
+    for(let i=0;i<count;i++){
+        let s=document.createElement('div');
+        s.className='sparkle';
+        s.style.left=Math.random()*100+'%';
+        s.style.top=Math.random()*100+'%';
+        s.style.width=s.style.height='4px';
+        s.style.animationDuration=(2+Math.random()*3)+'s';
+        s.style.animationDelay=Math.random()*3+'s';
+        container.appendChild(s);
+    }
 }
 </script>
+
 </body>
 </html>
