@@ -4,165 +4,82 @@
 <meta charset="UTF-8">
 <title>Withdraw - EarnBDT</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#f4f6f9;
-}
-.header{
-  background:#0a7cff;
-  color:#fff;
-  padding:15px;
-  text-align:center;
-}
-.card{
-  background:#fff;
-  margin:15px;
-  padding:15px;
-  border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
-}
-input, select{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:6px;
-  border:1px solid #ccc;
-  font-size:16px;
-}
-button{
-  width:100%;
-  padding:14px;
-  margin-top:15px;
-  border:none;
-  border-radius:6px;
-  font-size:16px;
-  background:#28a745;
-  color:#fff;
-  cursor:pointer;
-}
-.note{
-  font-size:14px;
-  color:#777;
-  margin-top:10px;
-}
+body{font-family:Arial;background:#f4f6f9;margin:0;}
+.container{max-width:400px;margin:50px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.1);}
+input, select{width:100%;padding:10px;margin:10px 0;border-radius:5px;border:1px solid #ccc;}
+button{width:100%;padding:10px;border:none;border-radius:5px;background:#28a745;color:#fff;font-size:16px;cursor:pointer;}
+.note{font-size:14px;color:#555;}
 </style>
 </head>
-
 <body>
+<div class="container">
+<h2>Withdraw</h2>
+<p id="balanceText">Loading...</p>
+<p class="note">Note: 1050 points = 100 BDT. Minimum 1050 points required.</p>
 
-<div class="header">
-  <h2>Withdraw Request</h2>
+<form id="withdrawForm">
+<select id="method" required>
+  <option value="">Select Method</option>
+  <option>bKash</option>
+  <option>Nagad</option>
+  <option>Rocket</option>
+</select>
+<input type="text" id="number" placeholder="Your Number" required>
+<input type="number" id="amount" placeholder="Amount in BDT" required>
+<button type="submit">Request Withdraw</button>
+</form>
 </div>
 
-<div class="card">
-  <input type="text" id="username" placeholder="Username" disabled>
-  <input type="email" id="email" placeholder="Email" disabled>
-
-  <select id="method">
-    <option value="">Select Payment Method</option>
-    <option>Bkash</option>
-    <option>Nagad</option>
-    <option>Rocket</option>
-  </select>
-
-  <input type="text" id="number" placeholder="Payment Number">
-  <input type="number" id="amount" placeholder="Withdraw Amount (BDT)">
-
-  <button onclick="submitWithdraw()">Submit Withdraw Request</button>
-
-  <div class="note">
-    ⚠ Minimum withdraw: 1050 points
-  </div>
-</div>
-
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getDatabase, ref, get, push, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { getDatabase, ref, get, update, push } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDNkACe_Drga8Uzm-mGMKKLvignadR7jN0",
-  authDomain: "earnbdtapp.firebaseapp.com",
-  databaseURL: "https://earnbdtapp-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  projectId: "earnbdtapp",
-  storageBucket: "earnbdtapp.firebasestorage.app",
-  messagingSenderId: "407276444050",
-  appId: "1:407276444050:web:b6ff2e075202716b5e094b"
-};
-
+const firebaseConfig = { /* Firebase Config */ };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-let uid = "";
-let balance = 0;
-
-onAuthStateChanged(auth, user=>{
-  if(!user){
-    location.href="login.html";
-    return;
-  }
-  uid = user.uid;
-  document.getElementById("email").value = user.email;
-
-  get(ref(db,"users/"+uid)).then(snap=>{
-    if(snap.exists()){
-      const d = snap.val();
-      document.getElementById("username").value = d.username || "User";
-      balance = Number(d.balance || 0);
-    }
-  });
+let uid;
+onAuthStateChanged(auth,user=>{
+  if(!user) location.href="login.html";
+  uid=user.uid;
+  loadBalance();
 });
 
-window.submitWithdraw = function(){
-  const method = document.getElementById("method").value;
-  const number = document.getElementById("number").value.trim();
-  const amount = Number(document.getElementById("amount").value);
-
-  if(!method || !number || !amount){
-    alert("সব ফিল্ড পূরণ করুন");
-    return;
-  }
-
-  if(amount < 1050){
-    alert("Minimum withdraw 1050 points");
-    return;
-  }
-
-  if(amount > balance){
-    alert("পর্যাপ্ত ব্যালেন্স নেই");
-    return;
-  }
-
-  // balance কাটছি
-  const newBalance = balance - amount;
-
-  const requestData = {
-    uid: uid,
-    email: document.getElementById("email").value,
-    username: document.getElementById("username").value,
-    method: method,
-    number: number,
-    amount: amount,
-    status: "Pending",
-    time: Date.now()
-  };
-
-  const newRef = push(ref(db,"withdraw_requests"));
-
-  update(ref(db), {
-    ["withdraw_requests/"+newRef.key]: requestData,
-    ["users/"+uid+"/balance"]: newBalance
-  }).then(()=>{
-    alert("Withdraw request submitted");
-    location.href="dashboard.html";
+function loadBalance(){
+  get(ref(db,"users/"+uid)).then(snap=>{
+    if(snap.exists()) document.getElementById("balanceText").innerText=snap.val().balance+" points";
   });
 }
-</script>
 
+document.getElementById("withdrawForm").onsubmit=async(e)=>{
+  e.preventDefault();
+  const amountBDT=Number(document.getElementById("amount").value);
+  const method=document.getElementById("method").value;
+  const number=document.getElementById("number").value;
+
+  const pointsRequired=Math.ceil(amountBDT*1050/100);
+
+  const userSnap=await get(ref(db,"users/"+uid));
+  const balance=userSnap.val().balance||0;
+
+  if(balance<pointsRequired){
+    alert("Minimum points required: "+pointsRequired);
+    return;
+  }
+
+  // Deduct points
+  await update(ref(db,"users/"+uid),{balance:balance-pointsRequired});
+
+  // Add withdraw request
+  await push(ref(db,"withdraw_requests"),{
+    uid,email:userSnap.val().email,method,number,amount:amountBDT,status:"pending",time:Date.now()
+  });
+
+  alert("Withdraw request sent!");
+}
+</script>
 </body>
 </html>
